@@ -134,10 +134,7 @@ impl SPool {
             .collect()
     }
 
-    pub fn update_lst_data_list<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    pub fn update_lst_data_list(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         // use raw indices to avoid lifetime errs from borrowing immut field (self.lst_state_list)
         // while borrowing mut field (self.lst_data_list)
         #[allow(clippy::manual_try_fold)] // we dont want to short-circuit, so dont try_fold()
@@ -249,10 +246,7 @@ impl SPool {
 }
 
 impl SPool {
-    pub fn update_lp_token_supply<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    pub fn update_lp_token_supply(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         let supply = {
             let pool_state_data = match self.pool_state_data() {
                 Ok(p) => p,

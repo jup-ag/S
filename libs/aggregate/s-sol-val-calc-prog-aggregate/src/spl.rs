@@ -1,5 +1,6 @@
 use generic_pool_calculator_interface::GenericPoolCalculatorError;
 use generic_pool_calculator_lib::account_resolvers::LstSolCommonIntermediateKeys;
+use pricing_programs_interface::AccountMap;
 use sanctum_token_ratio::U64ValueRange;
 use sol_value_calculator_lib::SolValueCalculator;
 use solana_program::{
@@ -64,10 +65,7 @@ impl MutableLstSolValCalc for SplLstSolValCalc {
         vec![sysvar::clock::ID, self.stake_pool_addr]
     }
 
-    fn update<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    fn update(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         if let Some(acc) = account_map.get(&sysvar::clock::ID) {
             self.clock = Some(bincode::deserialize::<Clock>(&acc.data())?);
         }

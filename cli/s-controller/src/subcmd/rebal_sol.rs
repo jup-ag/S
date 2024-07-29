@@ -5,7 +5,7 @@ use clap::{
     Args,
 };
 use inquire::Confirm;
-use jupiter_amm_interface::SwapParams;
+use jupiter_amm_interface::{AccountMap, SwapParams};
 use s_cli_utils::handle_tx_full;
 use s_controller_lib::{
     end_rebalance_ix_from_start_rebalance_ix, find_lst_state_list_address,
@@ -139,7 +139,7 @@ impl RebalSolArgs {
         accounts_to_fetch.dedup();
 
         // TODO: make sure accounts_to_fetch.len() < 5 or we get kicked by rpc
-        let account_map: HashMap<Pubkey, Account> = rpc
+        let account_map: AccountMap = rpc
             .get_multiple_accounts(&accounts_to_fetch)
             .await
             .unwrap()

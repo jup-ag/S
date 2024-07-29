@@ -15,6 +15,7 @@ use flat_fee_lib::{
     pda::{FeeAccountCreatePdaArgs, FeeAccountFindPdaArgs, ProgramStateFindPdaArgs},
     utils::{try_fee_account, try_program_state},
 };
+use pricing_programs_interface::AccountMap;
 use solana_program::{instruction::AccountMeta, pubkey::Pubkey};
 use solana_readonly_account::ReadonlyAccountData;
 use std::collections::HashMap;
@@ -132,10 +133,7 @@ impl MutablePricingProg for FlatFeePricingProg {
             .collect()
     }
 
-    fn update<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    fn update(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         let psa = self.find_program_state_addr();
         if let Some(acc) = account_map.get(&psa) {
             self.program_state = Some(*try_program_state(&acc.data())?);

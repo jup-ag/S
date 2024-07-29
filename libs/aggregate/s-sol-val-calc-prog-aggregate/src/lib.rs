@@ -1,6 +1,7 @@
 // TODO: all generic pool calculator implementations currently assume the stake pool program is never updated,
 // otherwise, get_accounts_to_update() will include the very large programdata accounts.
 
+use pricing_programs_interface::AccountMap;
 use solana_program::{instruction::AccountMeta, pubkey::Pubkey};
 use solana_readonly_account::ReadonlyAccountData;
 use std::collections::HashMap;
@@ -45,10 +46,7 @@ impl MutableLstSolValCalc for KnownLstSolValCalc {
         }
     }
 
-    fn update<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    fn update(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         match self {
             Self::Lido(s) => s.update(account_map),
             Self::Marinade(s) => s.update(account_map),
