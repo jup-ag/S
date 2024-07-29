@@ -16,6 +16,7 @@ use sanctum_token_lib::MintWithTokenProgram;
 use sanctum_token_ratio::AmtsAfterFeeBuilder;
 use solana_readonly_account::ReadonlyAccountData;
 use solana_sdk::{
+    account::Account,
     instruction::{AccountMeta, Instruction},
     pubkey::Pubkey,
 };
@@ -24,7 +25,7 @@ use crate::{LstData, SPool};
 
 use super::{apply_sync_sol_value, calc_quote_fees};
 
-impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     pub(crate) fn quote_remove_liquidity(
         &self,
         QuoteParams {
@@ -107,7 +108,8 @@ impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
             destination_mint,
             ..
         }: &SwapParams,
-    ) -> anyhow::Result<RemoveLiquidityByMintFreeArgs<&S, &L, MintWithTokenProgram>> {
+    ) -> anyhow::Result<RemoveLiquidityByMintFreeArgs<&Account, &Account, MintWithTokenProgram>>
+    {
         Ok(RemoveLiquidityByMintFreeArgs {
             signer: *token_transfer_authority,
             src_lp_acc: *source_token_account,

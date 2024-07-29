@@ -20,7 +20,7 @@ use crate::{LstData, SPool};
 
 use super::{apply_sync_sol_value, calc_quote_fees};
 
-impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     pub(crate) fn quote_swap_exact_out(
         &self,
         QuoteParams {
