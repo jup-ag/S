@@ -1,16 +1,17 @@
 use std::collections::HashMap;
 
+use jupiter_amm_interface::AccountMap;
 use s_controller_interface::LstState;
 use s_controller_lib::{try_lst_state_list, try_pool_state};
 use s_pricing_prog_aggregate::MutablePricingProg;
 use s_sol_val_calc_prog_aggregate::{LstSolValCalc, MutableLstSolValCalc};
 use sanctum_token_lib::{mint_supply, token_account_balance};
 use solana_readonly_account::ReadonlyAccountData;
-use solana_sdk::pubkey::Pubkey;
+use solana_sdk::{account::Account, pubkey::Pubkey};
 
 use crate::{utils::try_pricing_prog, LstData, SPool};
 
-impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     pub fn get_accounts_to_update_full(&self) -> Vec<Pubkey> {
         let mut res: Vec<Pubkey> = self
             .get_accounts_to_update_base()
@@ -25,8 +26,8 @@ impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
     }
 }
 
-impl<D: ReadonlyAccountData + Clone> SPool<D, D> {
-    pub fn update_full(&mut self, account_map: &HashMap<Pubkey, D>) -> anyhow::Result<()> {
+impl SPool {
+    pub fn update_full(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         // returns the first encountered error, but tries to update everything eagerly
         // even after encountering an error
 
@@ -45,7 +46,7 @@ impl<D: ReadonlyAccountData + Clone> SPool<D, D> {
     }
 }
 
-impl<S, L> SPool<S, L> {
+impl SPool {
     pub fn get_accounts_to_update_base(&self) -> [Pubkey; 2] {
         [self.lst_state_list_addr, self.pool_state_addr]
     }
@@ -71,10 +72,7 @@ impl<S, L> SPool<S, L> {
             .map_or_else(Vec::new, |pp| pp.get_accounts_to_update_for_liquidity())
     }
 
-    pub fn update_pricing_prog<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    pub fn update_pricing_prog(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         if let Some(pp) = self.pricing_prog.as_mut() {
             pp.update(account_map)?;
         }
@@ -82,7 +80,7 @@ impl<S, L> SPool<S, L> {
     }
 }
 
-impl<S, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     fn lst_accounts_to_update(
         &self,
         lst_state: &LstState,
@@ -136,10 +134,7 @@ impl<S, L: ReadonlyAccountData> SPool<S, L> {
             .collect()
     }
 
-    pub fn update_lst_data_list<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    pub fn update_lst_data_list(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         // use raw indices to avoid lifetime errs from borrowing immut field (self.lst_state_list)
         // while borrowing mut field (self.lst_data_list)
         #[allow(clippy::manual_try_fold)] // we dont want to short-circuit, so dont try_fold()
@@ -170,11 +165,8 @@ impl<S, L: ReadonlyAccountData> SPool<S, L> {
             .fold(Ok(()), |res, curr_res| res.and(curr_res))
     }
 }
-impl<S, L: ReadonlyAccountData + Clone> SPool<S, L> {
-    pub fn update_lst_state_list(
-        &mut self,
-        account_map: &HashMap<Pubkey, L>,
-    ) -> anyhow::Result<()> {
+impl SPool {
+    pub fn update_lst_state_list(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         let new_lst_state_list_account = match account_map.get(&self.lst_state_list_addr) {
             Some(acc) => acc.clone(),
             None => return Ok(()),
@@ -253,11 +245,8 @@ impl<S, L: ReadonlyAccountData + Clone> SPool<S, L> {
     }
 }
 
-impl<S: ReadonlyAccountData, L> SPool<S, L> {
-    pub fn update_lp_token_supply<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+impl SPool {
+    pub fn update_lp_token_supply(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         let supply = {
             let pool_state_data = match self.pool_state_data() {
                 Ok(p) => p,
@@ -275,8 +264,8 @@ impl<S: ReadonlyAccountData, L> SPool<S, L> {
     }
 }
 
-impl<S: ReadonlyAccountData + Clone, L: ReadonlyAccountData> SPool<S, L> {
-    pub fn update_pool_state(&mut self, account_map: &HashMap<Pubkey, S>) -> anyhow::Result<()> {
+impl SPool {
+    pub fn update_pool_state(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         let new_pool_state_acc = match account_map.get(&self.pool_state_addr) {
             Some(a) => a,
             None => return Ok(()),

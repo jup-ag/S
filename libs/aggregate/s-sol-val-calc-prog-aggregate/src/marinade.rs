@@ -4,6 +4,7 @@ use marinade_calculator_lib::{
     MarinadeSolValCalc, MarinadeStateCalc, MARINADE_LST_SOL_COMMON_INTERMEDIATE_KEYS,
 };
 use marinade_keys::{marinade_state, msol};
+use pricing_programs_interface::AccountMap;
 use sanctum_token_ratio::U64ValueRange;
 use sol_value_calculator_lib::SolValueCalculator;
 use solana_program::{instruction::AccountMeta, pubkey::Pubkey};
@@ -23,13 +24,10 @@ impl MutableLstSolValCalc for MarinadeLstSolValCalc {
         vec![marinade_state::ID]
     }
 
-    fn update<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    fn update(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         if let Some(acc) = account_map.get(&marinade_state::ID) {
             self.calc = Some(MarinadeStateCalc::from(MarinadeState::deserialize(
-                &mut acc.data().as_ref(),
+                &mut acc.data().0,
             )?));
         }
         Ok(())

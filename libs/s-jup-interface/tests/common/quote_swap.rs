@@ -17,7 +17,6 @@ pub async fn assert_quote_swap_eq(
     quote: &QuoteParams,
 ) {
     let Quote {
-        not_enough_liquidity,
         in_amount,
         out_amount,
         ..
@@ -42,7 +41,6 @@ pub async fn assert_quote_swap_eq(
     let destination_token_account_before =
         token_account_balance(bc.get_account_unwrapped(destination_token_account).await).unwrap();
 
-    assert!(!not_enough_liquidity);
     let ix = s
         .swap_ix(
             &SwapParams {
@@ -56,6 +54,7 @@ pub async fn assert_quote_swap_eq(
                 open_order_address: None,
                 quote_mint_to_referrer: None,
                 jupiter_program_id: &Pubkey::default(),
+                missing_dynamic_accounts_as_default: false,
             },
             quote.swap_mode,
         )

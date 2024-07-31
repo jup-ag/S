@@ -5,7 +5,7 @@ use s_pricing_prog_aggregate::KnownPricingProg;
 use s_sol_val_calc_prog_aggregate::KnownLstSolValCalc;
 use sanctum_associated_token_lib::{CreateAtaAddressArgs, FindAtaAddressArgs};
 use solana_program::pubkey::{Pubkey, PubkeyError};
-use solana_readonly_account::ReadonlyAccountData;
+use solana_readonly_account::{sdk::AccountDataRef, ReadonlyAccountData, ReadonlyAccountPubkey};
 use solana_sdk::account::Account;
 
 pub(crate) mod utils;
@@ -20,6 +20,11 @@ pub use init::*;
 pub use jup_interface::*;
 pub use update::*;
 
+pub use s_controller_lib::{
+    find_lst_state_list_address,
+    program::{ID as INF_PROGRAM_ID, LST_STATE_LIST_ID as INF_LST_LIST_ID},
+};
+
 #[derive(Debug, Clone)]
 pub struct LstData {
     pub sol_val_calc: KnownLstSolValCalc,
@@ -28,17 +33,17 @@ pub struct LstData {
 }
 
 /// Convenience type alias for jupiter
-pub type SPoolJup = SPool<Account, Account>;
+pub type SPoolJup = SPool;
 
 #[derive(Debug, Clone)]
-pub struct SPool<S, L> {
+pub struct SPool {
     pub program_id: Pubkey,
     pub lst_state_list_addr: Pubkey,
     pub pool_state_addr: Pubkey,
     pub lp_mint_supply: Option<u64>,
     // pool_state optional since lst_state_list is the KeyedAccount we initialize with
-    pub pool_state_account: Option<S>,
-    pub lst_state_list_account: L,
+    pub pool_state_account: Option<Account>,
+    pub lst_state_list_account: Account,
     pub pricing_prog: Option<KnownPricingProg>,
     // indices match that of lst_state_list.
     // None means we don't know how to handle the given lst
@@ -46,7 +51,7 @@ pub struct SPool<S, L> {
     pub lst_data_list: Vec<Option<LstData>>,
 }
 
-impl<S, L: Default> Default for SPool<S, L> {
+impl Default for SPool {
     fn default() -> Self {
         Self {
             program_id: s_controller_lib::program::ID,
@@ -55,7 +60,7 @@ impl<S, L: Default> Default for SPool<S, L> {
             lp_mint_supply: None,
             pool_state_account: None,
             pricing_prog: None,
-            lst_state_list_account: L::default(),
+            lst_state_list_account: Account::default(),
             lst_data_list: Vec::new(),
         }
     }
@@ -63,7 +68,7 @@ impl<S, L: Default> Default for SPool<S, L> {
 
 // More impl blocks in other files
 
-impl<S, L> SPool<S, L> {
+impl SPool {
     pub fn pricing_prog(&self) -> anyhow::Result<&KnownPricingProg> {
         self.pricing_prog
             .as_ref()
@@ -91,15 +96,15 @@ impl<S, L> SPool<S, L> {
     }
 }
 
-impl<S: ReadonlyAccountData, L> SPool<S, L> {
+impl SPool {
     // cant return &PoolState directly
     // due to lifetime of pool_state.data()
-    pub fn pool_state_data(&self) -> anyhow::Result<S::DataDeref<'_>> {
+    pub fn pool_state_data(&self) -> anyhow::Result<&[u8]> {
         let pool_state = self
             .pool_state_account
             .as_ref()
             .ok_or_else(|| anyhow!("Pool state not fetched"))?;
-        Ok(pool_state.data())
+        Ok(pool_state.data().0)
     }
 
     pub fn lp_token_mint(&self) -> anyhow::Result<Pubkey> {
@@ -108,7 +113,7 @@ impl<S: ReadonlyAccountData, L> SPool<S, L> {
     }
 }
 
-impl<S, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     pub fn find_ready_lst(&self, lst_mint: Pubkey) -> anyhow::Result<(LstState, &LstData)> {
         let lst_state_list_account_data = self.lst_state_list_account.data();
         let lst_state_list = try_lst_state_list(&lst_state_list_account_data)?;

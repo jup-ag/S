@@ -1,9 +1,10 @@
 use s_controller_lib::{
     find_lst_state_list_address, find_pool_state_address, try_lst_state_list, try_pool_state,
 };
-use sanctum_lst_list::SanctumLst;
+use sanctum_lst_list::{SanctumLst, SanctumLstList};
 use solana_program::pubkey::Pubkey;
 use solana_readonly_account::ReadonlyAccountData;
+use solana_sdk::account::Account;
 
 use crate::{
     utils::{try_lst_data, try_pricing_prog},
@@ -42,7 +43,7 @@ pub struct SPoolInitAccounts<S, L> {
     pub pool_state: S,
 }
 
-impl<S, L> SPool<S, L> {
+impl SPool {
     /// Gets the list of accounts that must be fetched first to initialize
     /// SPool by passing the result into [`Self::from_fetched_accounts`]
     pub fn init_keys(program_id: Pubkey) -> SPoolInitKeys {
@@ -53,13 +54,25 @@ impl<S, L> SPool<S, L> {
     }
 }
 
-impl<S, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
+    pub fn from_lst_state_list_account(
+        program_id: Pubkey,
+        lst_state_list_account: Account,
+    ) -> anyhow::Result<Self> {
+        let SanctumLstList { sanctum_lst_list } = SanctumLstList::load();
+        Self::from_lst_state_list_account_and_sanctum_lst_list(
+            program_id,
+            lst_state_list_account,
+            &sanctum_lst_list,
+        )
+    }
+
     /// `Self`s created from this fn must be update_full() 2 more times before they can be used
     /// - first update fetches pool_state, updates various sol value calculator programs and pricing program
     /// - second update fetches LP token mint read from fetched pool_state
-    pub fn from_lst_state_list_account(
+    pub fn from_lst_state_list_account_and_sanctum_lst_list(
         program_id: Pubkey,
-        lst_state_list_account: L,
+        lst_state_list_account: Account,
         lst_list: &[SanctumLst],
     ) -> anyhow::Result<Self> {
         let SPoolInitKeys {
@@ -87,7 +100,7 @@ impl<S, L: ReadonlyAccountData> SPool<S, L> {
     }
 }
 
-impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     /// `Self`s created from this fn must be update_full() 1 more time before they can be used.
     ///  - this update updates the various sol value calculator programs and pricing program
     pub fn from_init_accounts(
@@ -95,7 +108,7 @@ impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
         SPoolInitAccounts {
             lst_state_list: lst_state_list_acc,
             pool_state: pool_state_acc,
-        }: SPoolInitAccounts<S, L>,
+        }: SPoolInitAccounts<Account, Account>,
         lst_list: &[SanctumLst],
     ) -> anyhow::Result<Self> {
         let pricing_prog = {
@@ -105,7 +118,11 @@ impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
             let pool_state = try_pool_state(&pool_state_acc_data)?;
             try_pricing_prog(pool_state, lst_state_list)?
         };
-        let mut res = Self::from_lst_state_list_account(program_id, lst_state_list_acc, lst_list)?;
+        let mut res = Self::from_lst_state_list_account_and_sanctum_lst_list(
+            program_id,
+            lst_state_list_acc,
+            lst_list,
+        )?;
         res.pool_state_account = Some(pool_state_acc);
         res.pricing_prog = Some(pricing_prog);
         Ok(res)

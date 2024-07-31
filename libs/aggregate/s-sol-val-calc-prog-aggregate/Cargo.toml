@@ -14,6 +14,7 @@ sol_value_calculator_interface = { workspace = true }
 solana-program = { workspace = true }
 solana-readonly-account = { workspace = true }
 sol-value-calculator-lib = { workspace = true }
+pricing_programs_interface = { workspace = true }
 
 # lido
 lido_calculator_interface = { workspace = true }

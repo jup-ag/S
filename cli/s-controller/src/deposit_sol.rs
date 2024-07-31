@@ -1,6 +1,6 @@
 use std::{collections::HashMap, error::Error};
 
-use jupiter_amm_interface::SwapParams;
+use jupiter_amm_interface::{AccountMap, SwapParams};
 use sanctum_lst_list::{PoolInfo, SanctumLst, SplPoolAccounts};
 use solana_sdk::{account::Account, instruction::Instruction, pubkey::Pubkey, system_program};
 use spl_token::native_mint;
@@ -65,7 +65,7 @@ impl DepositSolStakedex {
 
     pub fn update(
         &mut self,
-        account_map: &HashMap<Pubkey, Account>,
+        account_map: &AccountMap,
     ) -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
         match self {
             Self::Marinade(p) => {
