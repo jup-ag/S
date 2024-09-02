@@ -1,6 +1,9 @@
 use s_controller_interface::{SControllerError, SyncSolValueKeys};
 use solana_program::pubkey::Pubkey;
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountOwner, ReadonlyAccountPubkey};
+use solana_readonly_account::{
+    pubkey::{ReadonlyAccountOwner, ReadonlyAccountPubkey},
+    ReadonlyAccountData,
+};
 
 use crate::{
     create_pool_reserves_address, find_lst_state_list_address, find_pool_state_address,
@@ -24,14 +27,14 @@ impl<
     > SyncSolValueFreeArgs<L, M>
 {
     pub fn resolve(self) -> Result<SyncSolValueKeys, SControllerError> {
-        if *self.lst_state_list.pubkey() != LST_STATE_LIST_ID {
+        if self.lst_state_list.pubkey() != LST_STATE_LIST_ID {
             return Err(SControllerError::IncorrectLstStateList);
         }
         let lst_state_list_acc_data = self.lst_state_list.data();
         let list = try_lst_state_list(&lst_state_list_acc_data)?;
 
-        let lst_state = try_match_lst_mint_on_list(*self.lst_mint.pubkey(), list, self.lst_index)?;
-        let pool_reserves = create_pool_reserves_address(lst_state, *self.lst_mint.owner())?;
+        let lst_state = try_match_lst_mint_on_list(self.lst_mint.pubkey(), list, self.lst_index)?;
+        let pool_reserves = create_pool_reserves_address(lst_state, self.lst_mint.owner())?;
 
         Ok(SyncSolValueKeys {
             lst_mint: lst_state.mint,
@@ -92,12 +95,12 @@ impl<L: ReadonlyAccountData, M: ReadonlyAccountOwner + ReadonlyAccountPubkey>
         let lst_state_list_acc_data = self.lst_state_list.data();
         let list = try_lst_state_list(&lst_state_list_acc_data)?;
 
-        let (lst_index, lst_state) = try_find_lst_mint_on_list(*self.lst_mint.pubkey(), list)?;
-        let pool_reserves = create_pool_reserves_address(lst_state, *self.lst_mint.owner())?;
+        let (lst_index, lst_state) = try_find_lst_mint_on_list(self.lst_mint.pubkey(), list)?;
+        let pool_reserves = create_pool_reserves_address(lst_state, self.lst_mint.owner())?;
 
         Ok((
             SyncSolValueKeys {
-                lst_mint: *self.lst_mint.pubkey(),
+                lst_mint: self.lst_mint.pubkey(),
                 pool_state,
                 lst_state_list,
                 pool_reserves,

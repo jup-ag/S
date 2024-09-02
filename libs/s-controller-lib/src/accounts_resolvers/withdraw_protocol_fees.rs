@@ -1,7 +1,10 @@
 use s_controller_interface::{SControllerError, WithdrawProtocolFeesKeys};
-use sanctum_token_lib::{token_account_mint, MintWithTokenProgram};
+use sanctum_token_lib::{MintWithTokenProgram, ReadonlyTokenAccount};
 use solana_program::{program_error::ProgramError, pubkey::Pubkey};
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountOwner, ReadonlyAccountPubkey};
+use solana_readonly_account::{
+    pubkey::{ReadonlyAccountOwner, ReadonlyAccountPubkey},
+    ReadonlyAccountData,
+};
 
 use crate::{
     find_pool_state_address, find_protocol_fee_accumulator_address,
@@ -34,22 +37,25 @@ impl<
             withdraw_to,
         } = self;
 
-        if *pool_state.pubkey() != POOL_STATE_ID {
+        if pool_state.pubkey() != POOL_STATE_ID {
             return Err(SControllerError::IncorrectPoolState.into());
         }
 
-        let lst_mint = token_account_mint(&withdraw_to)?;
+        let lst_mint = ReadonlyTokenAccount(&withdraw_to)
+            .try_into_valid()?
+            .try_into_initialized()?
+            .token_account_mint();
         let (protocol_fee_accumulator, _protocol_fee_accumulator_bump) =
             find_protocol_fee_accumulator_address(FindLstPdaAtaKeys {
                 lst_mint,
-                token_program: *withdraw_to.owner(),
+                token_program: withdraw_to.owner(),
             });
         WithdrawProtocolFeesByMintFreeArgs {
             pool_state,
-            withdraw_to: *withdraw_to.pubkey(),
+            withdraw_to: withdraw_to.pubkey(),
             lst_mint: MintWithTokenProgram {
                 pubkey: lst_mint,
-                token_program: *withdraw_to.owner(),
+                token_program: withdraw_to.owner(),
             },
         }
         .resolve_with_pdas(WithdrawProtocolFeesPdas {
@@ -78,8 +84,8 @@ impl<S: ReadonlyAccountData, M: ReadonlyAccountOwner + ReadonlyAccountPubkey>
         let protocol_fee_accumulator = find_protocol_fee_accumulator_address_with_protocol_fee_id(
             protocol_fee_accumulator_auth,
             FindLstPdaAtaKeys {
-                lst_mint: *self.lst_mint.pubkey(),
-                token_program: *self.lst_mint.owner(),
+                lst_mint: self.lst_mint.pubkey(),
+                token_program: self.lst_mint.owner(),
             },
         )
         .0;
@@ -113,8 +119,8 @@ impl<S: ReadonlyAccountData, M: ReadonlyAccountOwner + ReadonlyAccountPubkey>
             protocol_fee_accumulator_auth,
             protocol_fee_beneficiary,
             withdraw_to,
-            token_program: *lst_mint.owner(),
-            lst_mint: *lst_mint.pubkey(),
+            token_program: lst_mint.owner(),
+            lst_mint: lst_mint.pubkey(),
         })
     }
 }

@@ -27,7 +27,7 @@ impl MutableLstSolValCalc for MarinadeLstSolValCalc {
     fn update(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         if let Some(acc) = account_map.get(&marinade_state::ID) {
             self.calc = Some(MarinadeStateCalc::from(MarinadeState::deserialize(
-                &mut acc.data().0,
+                &mut acc.data(),
             )?));
         }
         Ok(())

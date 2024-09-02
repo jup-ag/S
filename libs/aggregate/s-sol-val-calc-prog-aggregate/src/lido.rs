@@ -28,7 +28,7 @@ impl MutableLstSolValCalc for LidoLstSolValCalc {
             self.clock = Some(bincode::deserialize::<Clock>(&acc.data())?);
         }
         if let Some(acc) = account_map.get(&lido_state::ID) {
-            self.calc = Some(LidoCalc::from(Lido::deserialize(&mut acc.data().0)?));
+            self.calc = Some(LidoCalc::from(Lido::deserialize(&mut acc.data())?));
         }
         Ok(())
     }

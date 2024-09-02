@@ -1,6 +1,6 @@
 use flat_fee_interface::{AddLstKeys, FlatFeeError, ProgramState};
 use solana_program::{pubkey::Pubkey, system_program};
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountPubkey};
+use solana_readonly_account::{pubkey::ReadonlyAccountPubkey, ReadonlyAccountData};
 
 use crate::{
     pda::{FeeAccountCreatePdaArgs, FeeAccountFindPdaArgs, ProgramStateFindPdaArgs},
@@ -41,7 +41,7 @@ impl<S: ReadonlyAccountPubkey + ReadonlyAccountData> AddLstFreeArgs<S> {
             lst_mint,
         } = self;
 
-        if *state_acc.pubkey() != state_id {
+        if state_acc.pubkey() != state_id {
             return Err(FlatFeeError::IncorrectProgramState);
         }
 

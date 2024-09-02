@@ -5,7 +5,10 @@ use generic_pool_calculator_lib::{
     GenericPoolSolValCalc,
 };
 use solana_program::{instruction::AccountMeta, pubkey::Pubkey};
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountOwner, ReadonlyAccountPubkey};
+use solana_readonly_account::{
+    pubkey::{ReadonlyAccountOwner, ReadonlyAccountPubkey},
+    ReadonlyAccountData,
+};
 use spl_calculator_interface::{AccountType, SplStakePool};
 
 use crate::{SanctumSplMultiSolValCalc, SanctumSplSolValCalc, SplSolValCalc};
@@ -40,7 +43,7 @@ fn deserialize_stake_pool_check_program_owner<S: ReadonlyAccountData + ReadonlyA
     spl_stake_pool: S,
     stake_pool_program_id: Pubkey,
 ) -> Result<SplStakePool, GenericPoolCalculatorError> {
-    if *spl_stake_pool.owner() != stake_pool_program_id {
+    if spl_stake_pool.owner() != stake_pool_program_id {
         return Err(GenericPoolCalculatorError::InvalidStakePoolProgramData);
     }
     deserialize_stake_pool_checked(spl_stake_pool)
@@ -93,17 +96,16 @@ impl<
         self,
         stake_pool_program_id: Pubkey,
     ) -> Result<(LstSolCommonIntermediateArgs<Q>, SplStakePool), GenericPoolCalculatorError> {
-        if *self.spl_stake_pool_prog.pubkey() != stake_pool_program_id {
+        if self.spl_stake_pool_prog.pubkey() != stake_pool_program_id {
             return Err(GenericPoolCalculatorError::WrongPoolProgram);
         }
-        let stake_pool = deserialize_stake_pool_check_program_owner(
-            &self.spl_stake_pool,
-            stake_pool_program_id,
-        )?;
+        let pubkey = self.spl_stake_pool.pubkey();
+        let stake_pool =
+            deserialize_stake_pool_check_program_owner(self.spl_stake_pool, stake_pool_program_id)?;
         Ok((
             LstSolCommonIntermediateArgs {
                 lst_mint: stake_pool.pool_mint,
-                pool_state: *self.spl_stake_pool.pubkey(),
+                pool_state: pubkey,
                 pool_program: self.spl_stake_pool_prog,
             },
             stake_pool,
@@ -122,10 +124,11 @@ impl<S: ReadonlyAccountPubkey + ReadonlyAccountData + ReadonlyAccountOwner>
     SplLstSolCommonFreeArgsConst<S>
 {
     pub fn resolve_spl(self) -> Result<LstSolCommonIntermediateKeys, GenericPoolCalculatorError> {
-        let stake_pool = deserialize_spl_stake_pool_checked(&self.spl_stake_pool)?;
+        let pubkey = self.spl_stake_pool.pubkey();
+        let stake_pool = deserialize_spl_stake_pool_checked(self.spl_stake_pool)?;
         Ok(LstSolCommonIntermediateKeys {
             lst_mint: stake_pool.pool_mint,
-            pool_state: *self.spl_stake_pool.pubkey(),
+            pool_state: pubkey,
         })
     }
 
@@ -139,10 +142,11 @@ impl<S: ReadonlyAccountPubkey + ReadonlyAccountData + ReadonlyAccountOwner>
     pub fn resolve_sanctum_spl(
         self,
     ) -> Result<LstSolCommonIntermediateKeys, GenericPoolCalculatorError> {
-        let stake_pool = deserialize_sanctum_spl_stake_pool_checked(&self.spl_stake_pool)?;
+        let pubkey = self.spl_stake_pool.pubkey();
+        let stake_pool = deserialize_sanctum_spl_stake_pool_checked(self.spl_stake_pool)?;
         Ok(LstSolCommonIntermediateKeys {
             lst_mint: stake_pool.pool_mint,
-            pool_state: *self.spl_stake_pool.pubkey(),
+            pool_state: pubkey,
         })
     }
 
@@ -158,10 +162,11 @@ impl<S: ReadonlyAccountPubkey + ReadonlyAccountData + ReadonlyAccountOwner>
     pub fn resolve_sanctum_spl_multi(
         self,
     ) -> Result<LstSolCommonIntermediateKeys, GenericPoolCalculatorError> {
-        let stake_pool = deserialize_sanctum_spl_multi_stake_pool_checked(&self.spl_stake_pool)?;
+        let pubkey = self.spl_stake_pool.pubkey();
+        let stake_pool = deserialize_sanctum_spl_multi_stake_pool_checked(self.spl_stake_pool)?;
         Ok(LstSolCommonIntermediateKeys {
             lst_mint: stake_pool.pool_mint,
-            pool_state: *self.spl_stake_pool.pubkey(),
+            pool_state: pubkey,
         })
     }
 

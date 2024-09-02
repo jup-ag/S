@@ -5,7 +5,7 @@ use s_pricing_prog_aggregate::KnownPricingProg;
 use s_sol_val_calc_prog_aggregate::KnownLstSolValCalc;
 use sanctum_associated_token_lib::{CreateAtaAddressArgs, FindAtaAddressArgs};
 use solana_program::pubkey::{Pubkey, PubkeyError};
-use solana_readonly_account::{sdk::AccountDataRef, ReadonlyAccountData, ReadonlyAccountPubkey};
+use solana_readonly_account::{pubkey::ReadonlyAccountPubkey, ReadonlyAccountData};
 use solana_sdk::account::Account;
 
 pub(crate) mod utils;
@@ -104,7 +104,7 @@ impl SPool {
             .pool_state_account
             .as_ref()
             .ok_or_else(|| anyhow!("Pool state not fetched"))?;
-        Ok(pool_state.data().0)
+        Ok(pool_state.data())
     }
 
     pub fn lp_token_mint(&self) -> anyhow::Result<Pubkey> {

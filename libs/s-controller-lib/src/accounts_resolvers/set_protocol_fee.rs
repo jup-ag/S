@@ -1,6 +1,6 @@
 use s_controller_interface::{SControllerError, SetProtocolFeeKeys};
 use solana_program::pubkey::Pubkey;
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountPubkey};
+use solana_readonly_account::{pubkey::ReadonlyAccountPubkey, ReadonlyAccountData};
 
 use crate::{find_pool_state_address, program::POOL_STATE_ID, try_pool_state};
 
@@ -11,7 +11,7 @@ pub struct SetProtocolFeeFreeArgs<S> {
 
 impl<S: ReadonlyAccountData + ReadonlyAccountPubkey> SetProtocolFeeFreeArgs<S> {
     pub fn resolve(self) -> Result<SetProtocolFeeKeys, SControllerError> {
-        if *self.pool_state.pubkey() != POOL_STATE_ID {
+        if self.pool_state.pubkey() != POOL_STATE_ID {
             return Err(SControllerError::IncorrectPoolState);
         }
 

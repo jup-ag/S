@@ -1,6 +1,9 @@
 use s_controller_interface::{PoolState, SControllerError, StartRebalanceKeys};
 use solana_program::{pubkey::Pubkey, system_program, sysvar};
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountOwner, ReadonlyAccountPubkey};
+use solana_readonly_account::{
+    pubkey::{ReadonlyAccountOwner, ReadonlyAccountPubkey},
+    ReadonlyAccountData,
+};
 
 use crate::{
     create_pool_reserves_address, find_lst_state_list_address, find_pool_state_address,
@@ -54,10 +57,10 @@ impl<
     > StartRebalanceFreeArgs<SM, DM, S, L>
 {
     pub fn resolve(self) -> Result<StartRebalanceKeys, SControllerError> {
-        if *self.lst_state_list.pubkey() != LST_STATE_LIST_ID {
+        if self.lst_state_list.pubkey() != LST_STATE_LIST_ID {
             return Err(SControllerError::IncorrectLstStateList);
         }
-        if *self.pool_state.pubkey() != POOL_STATE_ID {
+        if self.pool_state.pubkey() != POOL_STATE_ID {
             return Err(SControllerError::IncorrectPoolState);
         }
 
@@ -65,14 +68,14 @@ impl<
         let list = try_lst_state_list(&lst_state_list_acc_data)?;
 
         let src_lst_state =
-            try_match_lst_mint_on_list(*self.src_lst_mint.pubkey(), list, self.src_lst_index)?;
+            try_match_lst_mint_on_list(self.src_lst_mint.pubkey(), list, self.src_lst_index)?;
         let src_pool_reserves =
-            create_pool_reserves_address(src_lst_state, *self.src_lst_mint.owner())?;
+            create_pool_reserves_address(src_lst_state, self.src_lst_mint.owner())?;
 
         let dst_lst_state =
-            try_match_lst_mint_on_list(*self.dst_lst_mint.pubkey(), list, self.dst_lst_index)?;
+            try_match_lst_mint_on_list(self.dst_lst_mint.pubkey(), list, self.dst_lst_index)?;
         let dst_pool_reserves =
-            create_pool_reserves_address(dst_lst_state, *self.dst_lst_mint.owner())?;
+            create_pool_reserves_address(dst_lst_state, self.dst_lst_mint.owner())?;
 
         let pool_state_acc_data = self.pool_state.data();
         let pool_state = try_pool_state(&pool_state_acc_data)?;
@@ -89,7 +92,7 @@ impl<
             withdraw_to: self.withdraw_to,
             instructions: sysvar::instructions::ID,
             system_program: system_program::ID,
-            src_lst_token_program: *self.src_lst_mint.owner(),
+            src_lst_token_program: self.src_lst_mint.owner(),
         })
     }
 }
@@ -167,14 +170,14 @@ impl<
         let list = try_lst_state_list(&lst_state_list_acc_data)?;
 
         let (src_lst_index, src_lst_state) =
-            try_find_lst_mint_on_list(*self.src_lst_mint.pubkey(), list)?;
+            try_find_lst_mint_on_list(self.src_lst_mint.pubkey(), list)?;
         let src_pool_reserves =
-            create_pool_reserves_address(src_lst_state, *self.src_lst_mint.owner())?;
+            create_pool_reserves_address(src_lst_state, self.src_lst_mint.owner())?;
 
         let (dst_lst_index, dst_lst_state) =
-            try_find_lst_mint_on_list(*self.dst_lst_mint.pubkey(), list)?;
+            try_find_lst_mint_on_list(self.dst_lst_mint.pubkey(), list)?;
         let dst_pool_reserves =
-            create_pool_reserves_address(dst_lst_state, *self.dst_lst_mint.owner())?;
+            create_pool_reserves_address(dst_lst_state, self.dst_lst_mint.owner())?;
 
         let pool_state_acc_data = self.pool_state.data();
         let PoolState {
@@ -195,7 +198,7 @@ impl<
                 withdraw_to: self.withdraw_to,
                 instructions: sysvar::instructions::ID,
                 system_program: system_program::ID,
-                src_lst_token_program: *self.src_lst_mint.owner(),
+                src_lst_token_program: self.src_lst_mint.owner(),
             },
             SrcDstLstIndexes {
                 src_lst_index,

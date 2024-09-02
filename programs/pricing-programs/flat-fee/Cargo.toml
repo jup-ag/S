@@ -27,7 +27,7 @@ flat-fee-lib = { workspace = true, features = ["testing"] }
 flat-fee-test-utils = { workspace = true }
 sanctum-solana-test-utils = { workspace = true, features = ["token"] }
 solana-program-test = { workspace = true }
-solana-readonly-account = { workspace = true, features = ["solana-sdk"] }
+solana-readonly-account = { workspace = true, features = ["solana-sdk", "solana-pubkey"] }
 solana-sdk = { workspace = true }
 test-utils = { workspace = true }
 tokio = { workspace = true }

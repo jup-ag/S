@@ -22,7 +22,7 @@ sanctum-token-ratio = { workspace = true }
 serde_json = { workspace = true }
 solana-program = { workspace = true }
 solana-sdk = { workspace = true }
-solana-readonly-account = { workspace = true, features = ["solana-sdk"] }
+solana-readonly-account = { workspace = true, features = ["solana-sdk","solana-pubkey"] }
 spl-calculator-lib = { workspace = true }
 wsol-calculator-lib = { workspace = true }
 
@@ -30,7 +30,7 @@ wsol-calculator-lib = { workspace = true }
 async-trait = { workspace = true }
 flat-fee-test-utils = { workspace = true }
 marinade-keys = { workspace = true }
-s-controller = { workspace = true }
+# s-controller = { workspace = true }
 s-controller-test-utils = { workspace = true }
 sanctum-solana-test-utils = { workspace = true, features = ["token"] }
 solana-program-test = { workspace = true }

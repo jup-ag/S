@@ -1,5 +1,5 @@
 use generic_pool_calculator_interface::{GenericPoolCalculatorError, UpdateLastUpgradeSlotKeys};
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountPubkey};
+use solana_readonly_account::{pubkey::ReadonlyAccountPubkey, ReadonlyAccountData};
 
 use crate::{
     utils::{read_programdata_addr, try_calculator_state},
@@ -22,10 +22,10 @@ impl<
     pub fn resolve<P: GenericPoolSolValCalc>(
         self,
     ) -> Result<UpdateLastUpgradeSlotKeys, GenericPoolCalculatorError> {
-        if *self.state.pubkey() != P::CALCULATOR_STATE_PDA {
+        if self.state.pubkey() != P::CALCULATOR_STATE_PDA {
             return Err(GenericPoolCalculatorError::WrongCalculatorStatePda);
         }
-        if *self.pool_program.pubkey() != P::POOL_PROGRAM_ID {
+        if self.pool_program.pubkey() != P::POOL_PROGRAM_ID {
             return Err(GenericPoolCalculatorError::WrongPoolProgram);
         }
 
@@ -53,7 +53,7 @@ impl<S: ReadonlyAccountPubkey + ReadonlyAccountData> UpdateLastUpgradeSlotFreeAr
     pub fn resolve<P: GenericPoolSolValCalc>(
         self,
     ) -> Result<UpdateLastUpgradeSlotKeys, GenericPoolCalculatorError> {
-        if *self.state.pubkey() != P::CALCULATOR_STATE_PDA {
+        if self.state.pubkey() != P::CALCULATOR_STATE_PDA {
             return Err(GenericPoolCalculatorError::WrongCalculatorStatePda);
         }
 

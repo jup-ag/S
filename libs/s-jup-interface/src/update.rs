@@ -5,7 +5,7 @@ use s_controller_interface::LstState;
 use s_controller_lib::{try_lst_state_list, try_pool_state};
 use s_pricing_prog_aggregate::MutablePricingProg;
 use s_sol_val_calc_prog_aggregate::{LstSolValCalc, MutableLstSolValCalc};
-use sanctum_token_lib::{mint_supply, token_account_balance};
+use sanctum_token_lib::{ReadonlyMintAccount, ReadonlyTokenAccount};
 use solana_readonly_account::ReadonlyAccountData;
 use solana_sdk::{account::Account, pubkey::Pubkey};
 
@@ -156,7 +156,12 @@ impl SPool {
                     |e| Err(e.into()),
                     |ata| {
                         if let Some(fetched) = account_map.get(&ata) {
-                            ld.reserves_balance = Some(token_account_balance(fetched)?);
+                            ld.reserves_balance = Some(
+                                ReadonlyTokenAccount(fetched)
+                                    .try_into_valid()?
+                                    .try_into_initialized()?
+                                    .token_account_amount(),
+                            );
                         }
                         Ok(())
                     },
@@ -257,7 +262,10 @@ impl SPool {
                 Some(l) => l,
                 None => return Ok(()),
             };
-            mint_supply(lp_token_mint_acc)?
+            ReadonlyMintAccount(lp_token_mint_acc)
+                .try_into_valid()?
+                .try_into_initialized()?
+                .mint_supply()
         };
         self.lp_mint_supply = Some(supply);
         Ok(())

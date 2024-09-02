@@ -1,6 +1,6 @@
 use s_controller_interface::{SControllerError, SetAdminKeys};
 use solana_program::pubkey::Pubkey;
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountPubkey};
+use solana_readonly_account::{pubkey::ReadonlyAccountPubkey, ReadonlyAccountData};
 
 use crate::{find_pool_state_address, program::POOL_STATE_ID, try_pool_state};
 
@@ -26,7 +26,7 @@ impl<S: ReadonlyAccountData + ReadonlyAccountPubkey> SetAdminFreeArgs<S> {
             pool_state: pool_state_acc,
         } = self;
 
-        if *pool_state_acc.pubkey() != pool_state_id {
+        if pool_state_acc.pubkey() != pool_state_id {
             return Err(SControllerError::IncorrectPoolState);
         }
 

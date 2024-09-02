@@ -1,6 +1,6 @@
 use generic_pool_calculator_interface::GenericPoolCalculatorError;
 use solana_program::pubkey::Pubkey;
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountPubkey};
+use solana_readonly_account::{pubkey::ReadonlyAccountPubkey, ReadonlyAccountData};
 
 use crate::{utils::read_programdata_addr, GenericPoolSolValCalc, LstSolCommonKeys};
 
@@ -16,7 +16,7 @@ impl<Q: ReadonlyAccountPubkey + ReadonlyAccountData> LstSolCommonIntermediateArg
     pub fn resolve<P: GenericPoolSolValCalc>(
         self,
     ) -> Result<LstSolCommonKeys, GenericPoolCalculatorError> {
-        if *self.pool_program.pubkey() != P::POOL_PROGRAM_ID {
+        if self.pool_program.pubkey() != P::POOL_PROGRAM_ID {
             return Err(GenericPoolCalculatorError::WrongPoolProgram);
         }
         Ok(LstSolCommonKeys {

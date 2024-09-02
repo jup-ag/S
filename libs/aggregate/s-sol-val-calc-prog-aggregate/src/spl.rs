@@ -8,7 +8,10 @@ use solana_program::{
     pubkey::Pubkey,
     sysvar::{self, clock::Clock},
 };
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountOwner, ReadonlyAccountPubkey};
+use solana_readonly_account::{
+    pubkey::{ReadonlyAccountOwner, ReadonlyAccountPubkey},
+    ReadonlyAccountData,
+};
 use spl_calculator_lib::{
     deserialize_spl_stake_pool_checked, deserialize_stake_pool_checked,
     resolve_to_account_metas_for_calc, SplSolValCalc, SplStakePoolCalc,
@@ -49,7 +52,7 @@ impl SplLstSolValCalc {
     pub fn from_pool<P: ReadonlyAccountData + ReadonlyAccountPubkey + ReadonlyAccountOwner>(
         pool_acc: P,
     ) -> Result<Self, GenericPoolCalculatorError> {
-        let stake_pool_addr = *pool_acc.pubkey();
+        let stake_pool_addr = pool_acc.pubkey();
         let pool = deserialize_spl_stake_pool_checked(pool_acc)?;
         Ok(Self {
             lst_mint: pool.pool_mint,
