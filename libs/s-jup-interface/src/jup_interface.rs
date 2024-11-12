@@ -1,6 +1,7 @@
 use anyhow::anyhow;
 use jupiter_amm_interface::{
-    AccountMap, Amm, AmmContext, KeyedAccount, Quote, QuoteParams, SwapAndAccountMetas, SwapParams,
+    AccountMap, Amm, AmmContext, ClockRef, KeyedAccount, Quote, QuoteParams, SwapAndAccountMetas,
+    SwapParams,
 };
 use s_controller_lib::find_lst_state_list_address;
 use sanctum_lst_list::{
@@ -28,7 +29,9 @@ impl Amm for SPoolJup {
             account,
             params,
         }: &KeyedAccount,
-        _amm_context: &AmmContext,
+        AmmContext {
+            clock_ref: ClockRef { epoch, .. },
+        }: &AmmContext,
     ) -> anyhow::Result<Self>
     where
         Self: Sized,
@@ -56,6 +59,7 @@ impl Amm for SPoolJup {
             program_id,
             account.clone(),
             &sanctum_lst_list,
+            epoch,
         )
     }
 

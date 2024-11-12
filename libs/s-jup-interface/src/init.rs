@@ -1,3 +1,5 @@
+use std::sync::{atomic::AtomicU64, Arc};
+
 use s_controller_lib::{
     find_lst_state_list_address, find_pool_state_address, try_lst_state_list, try_pool_state,
 };
@@ -58,12 +60,14 @@ impl SPool {
     pub fn from_lst_state_list_account(
         program_id: Pubkey,
         lst_state_list_account: Account,
+        shared_current_epoch: &Arc<AtomicU64>,
     ) -> anyhow::Result<Self> {
         let SanctumLstList { sanctum_lst_list } = SanctumLstList::load();
         Self::from_lst_state_list_account_and_sanctum_lst_list(
             program_id,
             lst_state_list_account,
             &sanctum_lst_list,
+            shared_current_epoch,
         )
     }
 
@@ -74,6 +78,7 @@ impl SPool {
         program_id: Pubkey,
         lst_state_list_account: Account,
         lst_list: &[SanctumLst],
+        shared_current_epoch: &Arc<AtomicU64>,
     ) -> anyhow::Result<Self> {
         let SPoolInitKeys {
             lst_state_list: lst_state_list_addr,
@@ -84,7 +89,9 @@ impl SPool {
             let lst_state_list = try_lst_state_list(&lst_state_list_account_data)?;
             lst_state_list
                 .iter()
-                .map(|lst_state| try_lst_data(lst_list, lst_state))
+                .map(|lst_state| {
+                    try_lst_data(lst_list, lst_state, Arc::clone(shared_current_epoch))
+                })
                 .collect()
         };
         Ok(Self {
@@ -110,6 +117,7 @@ impl SPool {
             pool_state: pool_state_acc,
         }: SPoolInitAccounts<Account, Account>,
         lst_list: &[SanctumLst],
+        shared_current_epoch: &Arc<AtomicU64>,
     ) -> anyhow::Result<Self> {
         let pricing_prog = {
             let lst_state_list_acc_data = lst_state_list_acc.data();
@@ -122,6 +130,7 @@ impl SPool {
             program_id,
             lst_state_list_acc,
             lst_list,
+            shared_current_epoch,
         )?;
         res.pool_state_account = Some(pool_state_acc);
         res.pricing_prog = Some(pricing_prog);

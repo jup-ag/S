@@ -39,7 +39,7 @@ bytemuck = "^1"
 clap = { version = "^4", features = ["derive"] }
 data-encoding = "^2"
 inquire = { version = "^0.7", default-features = false, features = ["crossterm"] }
-jupiter-amm-interface = { version = "0.4.5" }
+jupiter-amm-interface = { version = "0.4.6" }
 lazy_static = "^1"
 num-derive = ">=0.3"
 num-traits = ">=0.2"
@@ -88,8 +88,7 @@ system_program_interface =  { git = "https://github.com/jup-ag/sanctum-solana-ut
 spl_token_interface = { git = "https://github.com/jup-ag/sanctum-solana-utils.git", rev = "1f8b79a78803e3ddc3c46c6ea94a31c77bead290" } 
 
 # sanctum-lst-list
-# TODO: update to 0.2.0 to include SanctumSplMulti
-sanctum-lst-list = { git = "https://github.com/igneous-labs/sanctum-lst-list.git", branch = "master" } # rev = "b4f05b2"
+sanctum-lst-list = { git = "https://github.com/igneous-labs/sanctum-lst-list.git", branch = "master" }
 
 # stakedex
 stakedex_interface = { git = "https://github.com/jup-ag/stakedex-sdk.git", rev = "beaa8f74ed11282fdca23be13f298b2120d3d9d2" }

@@ -1,6 +1,6 @@
 //! TODO: stuff in here should probably be moved to sanctum-token-lib
 
-use sanctum_token_lib::mint_supply;
+use sanctum_token_lib::ReadonlyMintAccount;
 use solana_program::{account_info::AccountInfo, program_error::ProgramError, pubkey::Pubkey};
 use spl_token_2022::extension::StateWithExtensions;
 
@@ -11,7 +11,11 @@ pub fn verify_tokenkeg_or_22_mint(mint: &AccountInfo) -> Result<(), ProgramError
     // TODO: change this to `sanctum_token_lib::ValidMintAccount::mint_is_initialized()`
     // when we upgrade `sanctum-token-lib`
     // trying to read mint.supply field verifies that the mint is initialized.
-    mint_supply(mint)?;
+    ReadonlyMintAccount(mint)
+        .try_into_valid()
+        .and_then(|v| v.try_into_initialized())
+        .map_err(|_| ProgramError::InvalidAccountData)?;
+
     Ok(())
 }
 

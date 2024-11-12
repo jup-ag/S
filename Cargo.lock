@@ -2484,9 +2484,9 @@ dependencies = [
 
 [[package]]
 name = "jupiter-amm-interface"
-version = "0.3.2"
+version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bad613279e534eba2c9d95ef6f2d2c7e170f6647ce50216301741ed3e73a79bb"
+checksum = "d3d08fe25539f5064257e7f372e8a172099656c248891c09c59318870de7e21a"
 dependencies = [
  "anyhow",
  "borsh 0.10.3",
@@ -2499,10 +2499,11 @@ dependencies = [
 
 [[package]]
 name = "jupiter-amm-interface"
-version = "0.4.5"
+version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "be954b20150b666b2bc328d1e490294a1c096e545f985d852f53c941209b2649"
+checksum = "0bcd70e16bebdcc4b4ba14a05b4d6357730ad0a6a988872365b799522b2053f8"
 dependencies = [
+ "ahash 0.8.11",
  "anyhow",
  "borsh 0.10.3",
  "rust_decimal",
@@ -2600,7 +2601,7 @@ dependencies = [
 
 [[package]]
 name = "lido-calculator"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "borsh 1.5.1",
  "generic-pool-calculator-lib",
@@ -2623,7 +2624,7 @@ dependencies = [
 
 [[package]]
 name = "lido-calculator-lib"
-version = "1.0.0"
+version = "2.0.0"
 dependencies = [
  "borsh 1.5.1",
  "generic-pool-calculator-lib",
@@ -2785,7 +2786,7 @@ name = "marinade_finance_interface"
 version = "0.1.0"
 source = "git+https://github.com/igneous-labs/marinade_finance_interface?branch=master#4d1895b6b1c34d731c1589e6d8a6c8feb6258152"
 dependencies = [
- "borsh 0.10.3",
+ "borsh 1.5.1",
  "num-derive 0.4.1",
  "num-traits",
  "solana-program",
@@ -3137,7 +3138,7 @@ version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af1844ef2428cc3e1cb900be36181049ef3d3193c63e43026cfe202983b27a56"
 dependencies = [
- "proc-macro-crate 2.0.0",
+ "proc-macro-crate 3.2.0",
  "proc-macro2",
  "quote",
  "syn 2.0.60",
@@ -3436,7 +3437,7 @@ version = "1.0.0"
 dependencies = [
  "borsh 1.5.1",
  "bytemuck",
- "jupiter-amm-interface 0.4.5",
+ "jupiter-amm-interface 0.4.6",
  "serde",
  "solana-program",
 ]
@@ -3458,15 +3459,6 @@ checksum = "7f4c021e1093a56626774e81216a4ce732a735e5bad4868a03f3ed65ca0c3919"
 dependencies = [
  "once_cell",
  "toml_edit 0.19.15",
-]
-
-[[package]]
-name = "proc-macro-crate"
-version = "2.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e8366a6159044a37876a2b9817124296703c586a5c92e2c53751fa06d8d43e8"
-dependencies = [
- "toml_edit 0.20.7",
 ]
 
 [[package]]
@@ -4146,7 +4138,7 @@ dependencies = [
  "generic-pool-calculator-lib",
  "generic_pool_calculator_interface",
  "inquire",
- "jupiter-amm-interface 0.4.5",
+ "jupiter-amm-interface 0.4.6",
  "lazy_static",
  "lido-calculator-lib",
  "marinade-calculator-lib",
@@ -4235,13 +4227,14 @@ dependencies = [
 
 [[package]]
 name = "s-jup-interface"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "async-trait",
+ "bincode",
  "flat-fee-test-utils",
  "flat_fee_interface",
- "jupiter-amm-interface 0.4.5",
+ "jupiter-amm-interface 0.4.6",
  "lido-calculator-lib",
  "marinade-calculator-lib",
  "marinade-keys",
@@ -4283,7 +4276,7 @@ dependencies = [
 
 [[package]]
 name = "s-sol-val-calc-prog-aggregate"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "bincode",
@@ -4342,7 +4335,7 @@ dependencies = [
 [[package]]
 name = "sanctum-lst-list"
 version = "0.2.0"
-source = "git+https://github.com/igneous-labs/sanctum-lst-list.git?branch=master#b4f05b27086fcdf98c3cdf16d3c9531b6a98160b"
+source = "git+https://github.com/igneous-labs/sanctum-lst-list.git?branch=master#ec01312a37c04ecdb25971c992f9254e4791e4d9"
 dependencies = [
  "sanctum-macros",
  "serde",
@@ -4448,7 +4441,7 @@ dependencies = [
 
 [[package]]
 name = "sanctum-spl-calculator"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "generic-pool-calculator-lib",
  "generic-pool-calculator-onchain",
@@ -4470,7 +4463,7 @@ dependencies = [
 
 [[package]]
 name = "sanctum-spl-multi-calculator"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "generic-pool-calculator-lib",
  "generic-pool-calculator-onchain",
@@ -6136,7 +6129,7 @@ dependencies = [
 
 [[package]]
 name = "spl-calculator"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "generic-pool-calculator-lib",
  "generic-pool-calculator-onchain",
@@ -6158,7 +6151,7 @@ dependencies = [
 
 [[package]]
 name = "spl-calculator-lib"
-version = "1.0.0"
+version = "2.0.0"
 dependencies = [
  "borsh 1.5.1",
  "generic-pool-calculator-lib",
@@ -6469,7 +6462,7 @@ version = "2.0.0"
 source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=1f8b79a78803e3ddc3c46c6ea94a31c77bead290#1f8b79a78803e3ddc3c46c6ea94a31c77bead290"
 dependencies = [
  "borsh 1.5.1",
- "num-derive 0.3.3",
+ "num-derive 0.4.1",
  "num-traits",
  "solana-program",
  "thiserror",
@@ -6493,7 +6486,7 @@ version = "4.0.0"
 source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=1f8b79a78803e3ddc3c46c6ea94a31c77bead290#1f8b79a78803e3ddc3c46c6ea94a31c77bead290"
 dependencies = [
  "borsh 1.5.1",
- "num-derive 0.3.3",
+ "num-derive 0.4.1",
  "num-traits",
  "solana-program",
  "thiserror",
@@ -6536,7 +6529,7 @@ source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=beaa8f74ed11282fdca
 dependencies = [
  "anyhow",
  "borsh 1.5.1",
- "jupiter-amm-interface 0.3.2",
+ "jupiter-amm-interface 0.3.3",
  "marinade_finance_interface",
  "solana-program",
  "spl-token",
@@ -6551,7 +6544,7 @@ version = "0.1.0"
 source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=beaa8f74ed11282fdca23be13f298b2120d3d9d2#beaa8f74ed11282fdca23be13f298b2120d3d9d2"
 dependencies = [
  "anyhow",
- "jupiter-amm-interface 0.3.2",
+ "jupiter-amm-interface 0.3.3",
  "rust_decimal",
  "sanctum-macros",
  "solana-program",
@@ -6567,7 +6560,7 @@ dependencies = [
  "anyhow",
  "bincode",
  "borsh 1.5.1",
- "jupiter-amm-interface 0.3.2",
+ "jupiter-amm-interface 0.3.3",
  "solana-program",
  "spl-stake-pool",
  "spl-token",
@@ -7087,17 +7080,6 @@ name = "toml_edit"
 version = "0.19.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1b5bb770da30e5cbfde35a2d7b9b8a2c4b8ef89548a7a6aeab5c9a576e3e7421"
-dependencies = [
- "indexmap 2.1.0",
- "toml_datetime",
- "winnow 0.5.19",
-]
-
-[[package]]
-name = "toml_edit"
-version = "0.20.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "70f427fce4d84c72b5b732388bf4a9f4531b53f74e2887e3ecb2481f68f66d81"
 dependencies = [
  "indexmap 2.1.0",
  "toml_datetime",
