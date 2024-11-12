@@ -7,7 +7,7 @@ Documenting potential risks and exploits.
 Example:
 
 - Malicious Lido operator wants to drain all the stSOL in the pool
-- Sets Lido stake wtihdrawal fee to 99%
+- Sets Lido stake withdrawal fee to 99%
 - Swap from any LST to stSOL to give ~100x the appropriate amount of stSOL
 - Set Lido stake withdrawal fee back to 0%
 - unstake the 100x stSOL from Lido

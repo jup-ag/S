@@ -24,7 +24,7 @@ Use the provided `Dockerfile.cli.musl` to create a builder alpine linux docker i
 
 ### clap v3 vs v4
 
-We're using clap v4 for the workspace, and `sanctum-solana-cli-utils`'s clap feature has version requirement set to `>=3`. For some reason this defaults to v3 despite having v4 in the workspace, so you wil need to edit the `sanctum-solana-cli-utils` entry in `Cargo.lock` to use whatever v4 clap version the workspace has. Hacky, I know.
+We're using clap v4 for the workspace, and `sanctum-solana-cli-utils`'s clap feature has version requirement set to `>=3`. For some reason this defaults to v3 despite having v4 in the workspace, so you will need to edit the `sanctum-solana-cli-utils` entry in `Cargo.lock` to use whatever v4 clap version the workspace has. Hacky, I know.
 
 ```toml
 [[package]]
