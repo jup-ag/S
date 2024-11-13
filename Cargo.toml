@@ -91,10 +91,10 @@ spl_token_interface = { git = "https://github.com/jup-ag/sanctum-solana-utils.gi
 sanctum-lst-list = { git = "https://github.com/jup-ag/sanctum-lst-list.git", rev = "9feccf7ac1dca9394006a249e3b979761baac007" }
 
 # stakedex
-stakedex_interface = { git = "https://github.com/jup-ag/stakedex-sdk.git", rev = "a9d76cd58f59c0077d0294307d796c1a8f017d12" }
-stakedex_marinade = { git = "https://github.com/jup-ag/stakedex-sdk.git", rev = "a9d76cd58f59c0077d0294307d796c1a8f017d12" }
-stakedex_sdk_common = { git = "https://github.com/jup-ag/stakedex-sdk.git", rev = "a9d76cd58f59c0077d0294307d796c1a8f017d12" }
-stakedex_spl_stake_pool = { git = "https://github.com/jup-ag/stakedex-sdk.git", rev = "a9d76cd58f59c0077d0294307d796c1a8f017d12" }
+stakedex_interface = { git = "https://github.com/jup-ag/stakedex-sdk.git", rev = "e82a11c691a8db827aaa234277c2d48fd50d6721" }
+stakedex_marinade = { git = "https://github.com/jup-ag/stakedex-sdk.git", rev = "e82a11c691a8db827aaa234277c2d48fd50d6721" }
+stakedex_sdk_common = { git = "https://github.com/jup-ag/stakedex-sdk.git", rev = "e82a11c691a8db827aaa234277c2d48fd50d6721" }
+stakedex_spl_stake_pool = { git = "https://github.com/jup-ag/stakedex-sdk.git", rev = "e82a11c691a8db827aaa234277c2d48fd50d6721" }
 
 # workspace members
 cli-test-utils = { path = "./cli/cli-test-utils" }

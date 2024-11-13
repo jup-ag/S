@@ -6997,7 +6997,7 @@ checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 [[package]]
 name = "stakedex_deposit_sol_interface"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=a9d76cd58f59c0077d0294307d796c1a8f017d12#a9d76cd58f59c0077d0294307d796c1a8f017d12"
+source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=e82a11c691a8db827aaa234277c2d48fd50d6721#e82a11c691a8db827aaa234277c2d48fd50d6721"
 dependencies = [
  "borsh 1.5.1",
  "solana-program 2.0.15",
@@ -7006,7 +7006,7 @@ dependencies = [
 [[package]]
 name = "stakedex_deposit_stake_interface"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=a9d76cd58f59c0077d0294307d796c1a8f017d12#a9d76cd58f59c0077d0294307d796c1a8f017d12"
+source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=e82a11c691a8db827aaa234277c2d48fd50d6721#e82a11c691a8db827aaa234277c2d48fd50d6721"
 dependencies = [
  "borsh 1.5.1",
  "solana-program 2.0.15",
@@ -7015,10 +7015,10 @@ dependencies = [
 [[package]]
 name = "stakedex_interface"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=a9d76cd58f59c0077d0294307d796c1a8f017d12#a9d76cd58f59c0077d0294307d796c1a8f017d12"
+source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=e82a11c691a8db827aaa234277c2d48fd50d6721#e82a11c691a8db827aaa234277c2d48fd50d6721"
 dependencies = [
  "borsh 1.5.1",
- "num-derive 0.4.1",
+ "num-derive 0.3.3",
  "num-traits",
  "solana-program 2.0.15",
  "thiserror",
@@ -7027,14 +7027,14 @@ dependencies = [
 [[package]]
 name = "stakedex_marinade"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=a9d76cd58f59c0077d0294307d796c1a8f017d12#a9d76cd58f59c0077d0294307d796c1a8f017d12"
+source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=e82a11c691a8db827aaa234277c2d48fd50d6721#e82a11c691a8db827aaa234277c2d48fd50d6721"
 dependencies = [
  "anyhow",
  "borsh 1.5.1",
  "jupiter-amm-interface",
  "marinade_finance_interface",
  "solana-program 2.0.15",
- "spl-token 6.0.0",
+ "spl-token 5.0.2",
  "stakedex_deposit_sol_interface",
  "stakedex_deposit_stake_interface",
  "stakedex_sdk_common",
@@ -7043,7 +7043,7 @@ dependencies = [
 [[package]]
 name = "stakedex_sdk_common"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=a9d76cd58f59c0077d0294307d796c1a8f017d12#a9d76cd58f59c0077d0294307d796c1a8f017d12"
+source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=e82a11c691a8db827aaa234277c2d48fd50d6721#e82a11c691a8db827aaa234277c2d48fd50d6721"
 dependencies = [
  "anyhow",
  "jupiter-amm-interface",
@@ -7057,7 +7057,7 @@ dependencies = [
 [[package]]
 name = "stakedex_spl_stake_pool"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=a9d76cd58f59c0077d0294307d796c1a8f017d12#a9d76cd58f59c0077d0294307d796c1a8f017d12"
+source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=e82a11c691a8db827aaa234277c2d48fd50d6721#e82a11c691a8db827aaa234277c2d48fd50d6721"
 dependencies = [
  "anyhow",
  "bincode",
@@ -7065,7 +7065,7 @@ dependencies = [
  "jupiter-amm-interface",
  "solana-program 2.0.15",
  "spl-stake-pool",
- "spl-token 6.0.0",
+ "spl-token 5.0.2",
  "stakedex_deposit_sol_interface",
  "stakedex_deposit_stake_interface",
  "stakedex_sdk_common",
@@ -7075,7 +7075,7 @@ dependencies = [
 [[package]]
 name = "stakedex_withdraw_stake_interface"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=a9d76cd58f59c0077d0294307d796c1a8f017d12#a9d76cd58f59c0077d0294307d796c1a8f017d12"
+source = "git+https://github.com/jup-ag/stakedex-sdk.git?rev=e82a11c691a8db827aaa234277c2d48fd50d6721#e82a11c691a8db827aaa234277c2d48fd50d6721"
 dependencies = [
  "borsh 1.5.1",
  "solana-program 2.0.15",
