@@ -2,7 +2,7 @@ use s_controller_interface::{
     RemoveDisablePoolAuthorityIxArgs, RemoveDisablePoolAuthorityKeys, SControllerError,
 };
 use solana_program::pubkey::Pubkey;
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountPubkey};
+use solana_readonly_account::{pubkey::ReadonlyAccountPubkey, ReadonlyAccountData};
 
 use crate::{
     find_disable_pool_authority_list_address, find_pool_state_address, index_to_u32,
@@ -28,10 +28,10 @@ impl<
     > RemoveDisablePoolAuthorityFreeArgs<S, L>
 {
     pub fn resolve(&self) -> Result<RemoveDisablePoolAuthorityKeys, SControllerError> {
-        if *self.pool_state_acc.pubkey() != POOL_STATE_ID {
+        if self.pool_state_acc.pubkey() != POOL_STATE_ID {
             return Err(SControllerError::IncorrectPoolState);
         }
-        if *self.disable_pool_authority_list.pubkey() != DISABLE_POOL_AUTHORITY_LIST_ID {
+        if self.disable_pool_authority_list.pubkey() != DISABLE_POOL_AUTHORITY_LIST_ID {
             return Err(SControllerError::IncorrectDisablePoolAuthorityList);
         }
 

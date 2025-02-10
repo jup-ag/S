@@ -33,7 +33,7 @@ sanctum-associated-token-lib = { workspace = true }
 sanctum-token-lib = { workspace = true }
 solana-client = { workspace = true }
 solana-account-decoder = { workspace = true }
-solana-readonly-account = { workspace = true, features = ["solana-sdk"]}
+solana-readonly-account = { workspace = true, features = ["solana-sdk", "keyed"]}
 solana-remote-wallet = { workspace = true, features = ["hidapi", "linux-static-hidraw"] } # for ledger support, these should be default-features but they're disabled somewhere
 solana-sdk = { workspace = true }
 spl-associated-token-account = { workspace = true }

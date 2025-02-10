@@ -6,7 +6,7 @@ use s_controller_lib::{
     program::{LST_STATE_LIST_BUMP, LST_STATE_LIST_SEED},
     try_lst_state_list, try_lst_state_list_mut, try_pool_state, AddLstFreeArgs, LstStateBumps,
 };
-use sanctum_associated_token_lib::{create_ata_invoke, CreateAtaAccounts};
+// use sanctum_associated_token_lib::{create_ata_invoke, CreateAtaAccounts};
 use sanctum_misc_utils::{
     load_accounts, log_and_return_acc_privilege_err, log_and_return_wrong_acc_err,
 };
@@ -30,25 +30,25 @@ pub fn process_add_lst(accounts: &[AccountInfo]) -> ProgramResult {
         },
     ) = verify_add_lst(accounts)?;
 
-    create_ata_if_not_exist(CreateAtaAccounts {
-        ata_to_create: accounts.pool_reserves,
-        wallet: accounts.pool_state,
+    // create_ata_if_not_exist(CreateAtaAccounts {
+    //     ata_to_create: accounts.pool_reserves,
+    //     wallet: accounts.pool_state,
 
-        payer: accounts.payer,
-        mint: accounts.lst_mint,
-        system_program: accounts.system_program,
-        token_program: accounts.lst_token_program,
-    })?;
+    //     payer: accounts.payer,
+    //     mint: accounts.lst_mint,
+    //     system_program: accounts.system_program,
+    //     token_program: accounts.lst_token_program,
+    // })?;
 
-    create_ata_if_not_exist(CreateAtaAccounts {
-        ata_to_create: accounts.protocol_fee_accumulator,
-        wallet: accounts.protocol_fee_accumulator_auth,
+    // create_ata_if_not_exist(CreateAtaAccounts {
+    //     ata_to_create: accounts.protocol_fee_accumulator,
+    //     wallet: accounts.protocol_fee_accumulator_auth,
 
-        payer: accounts.payer,
-        mint: accounts.lst_mint,
-        system_program: accounts.system_program,
-        token_program: accounts.lst_token_program,
-    })?;
+    //     payer: accounts.payer,
+    //     mint: accounts.lst_mint,
+    //     system_program: accounts.system_program,
+    //     token_program: accounts.lst_token_program,
+    // })?;
 
     extend_list_pda::<LstState>(
         ExtendListPdaAccounts {
@@ -77,13 +77,13 @@ pub fn process_add_lst(accounts: &[AccountInfo]) -> ProgramResult {
     Ok(())
 }
 
-fn create_ata_if_not_exist(accounts: CreateAtaAccounts) -> Result<(), ProgramError> {
-    if accounts.ata_to_create.data_is_empty() {
-        return create_ata_invoke(accounts);
-    }
-    verify_token_account_authority(accounts.ata_to_create, *accounts.wallet.key)?;
-    Ok(())
-}
+// fn create_ata_if_not_exist(accounts: CreateAtaAccounts) -> Result<(), ProgramError> {
+//     if accounts.ata_to_create.data_is_empty() {
+//         return create_ata_invoke(accounts);
+//     }
+//     verify_token_account_authority(accounts.ata_to_create, *accounts.wallet.key)?;
+//     Ok(())
+// }
 
 fn verify_not_duplicate(
     lst_state_list: &AccountInfo,

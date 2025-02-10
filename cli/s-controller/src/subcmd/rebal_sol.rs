@@ -8,7 +8,7 @@ use clap::{
     Args,
 };
 use inquire::Confirm;
-use jupiter_amm_interface::SwapParams;
+use jupiter_amm_interface::{AccountMap, SwapMode, SwapParams};
 use s_cli_utils::{handle_tx_full, pubkey_src_to_box_dyn_signer};
 use s_controller_lib::{
     end_rebalance_ix_from_start_rebalance_ix, find_lst_state_list_address,
@@ -20,7 +20,7 @@ use s_controller_lib::{
 use s_jup_interface::{LstData, SPool, SPoolInitAccounts};
 use s_sol_val_calc_prog_aggregate::LstSolValCalc;
 use sanctum_solana_cli_utils::PubkeySrc;
-use sanctum_token_lib::{token_account_balance, MintWithTokenProgram};
+use sanctum_token_lib::{MintWithTokenProgram, ReadonlyTokenAccount};
 use solana_readonly_account::keyed::Keyed;
 use solana_sdk::{
     account::Account, clock::Clock, native_token::lamports_to_sol, pubkey::Pubkey, sysvar,
@@ -116,7 +116,12 @@ impl RebalSolArgs {
                     token_program: spl_token::ID,
                 });
                 let fetched_reserves = rpc.get_account(&wsol_reserves).await.unwrap();
-                token_account_balance(fetched_reserves).unwrap()
+                ReadonlyTokenAccount(fetched_reserves)
+                    .try_into_valid()
+                    .unwrap()
+                    .try_into_initialized()
+                    .unwrap()
+                    .token_account_amount()
             }
         };
 
@@ -148,7 +153,7 @@ impl RebalSolArgs {
         accounts_to_fetch.dedup();
 
         // TODO: make sure accounts_to_fetch.len() < 5 or we get kicked by rpc
-        let account_map: HashMap<Pubkey, Account> = rpc
+        let account_map: AccountMap = rpc
             .get_multiple_accounts(&accounts_to_fetch)
             .await
             .unwrap()
@@ -216,7 +221,12 @@ impl RebalSolArgs {
         if subsidy_amt > 0 {
             match lst_subsidize_from_acc {
                 Some(a) => {
-                    let ata_balance = token_account_balance(a).unwrap();
+                    let ata_balance = ReadonlyTokenAccount(&a)
+                        .try_into_valid()
+                        .unwrap()
+                        .try_into_initialized()
+                        .unwrap()
+                        .token_account_amount();
                     if ata_balance < subsidy_amt {
                         panic!("Expected payer {symbol} ATA to have at least {subsidy_amt} for subsidy, but it only has {ata_balance}");
                     }
@@ -282,6 +292,7 @@ impl RebalSolArgs {
         ixs.push(
             deposit_sol
                 .deposit_sol_ix(&SwapParams {
+                    swap_mode: SwapMode::ExactIn,
                     in_amount: lamports,
                     out_amount: lst_minted,
                     source_mint: native_mint::ID,

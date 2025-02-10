@@ -3,7 +3,7 @@ use s_cli_utils::{handle_tx_full, pubkey_src_to_box_dyn_signer};
 use s_controller_interface::set_admin_ix_with_program_id;
 use s_controller_lib::{find_pool_state_address, try_pool_state, SetAdminFreeArgs};
 use sanctum_solana_cli_utils::PubkeySrc;
-use solana_readonly_account::sdk::KeyedAccount;
+use solana_readonly_account::keyed::Keyed;
 
 use crate::{common::verify_admin, rpc::fetch_pool_state};
 
@@ -56,7 +56,7 @@ impl SetAdminArgs {
             program_id,
             SetAdminFreeArgs {
                 new_admin,
-                pool_state: KeyedAccount {
+                pool_state: Keyed {
                     pubkey: find_pool_state_address(program_id).0,
                     account: pool_state_acc,
                 },

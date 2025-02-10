@@ -12,8 +12,8 @@ use sanctum_misc_utils::{
     load_accounts, log_and_return_acc_privilege_err, log_and_return_wrong_acc_err,
 };
 use sanctum_token_lib::{
-    token_account_balance, transfer_checked_decimal_agnostic_invoke,
-    transfer_checked_decimal_agnostic_invoke_signed, TransferCheckedAccounts,
+    transfer_checked_decimal_agnostic_invoke, transfer_checked_decimal_agnostic_invoke_signed,
+    ReadonlyTokenAccount, TransferCheckedAccounts,
 };
 use solana_program::{
     account_info::AccountInfo, entrypoint::ProgramResult, program_error::ProgramError,
@@ -86,7 +86,12 @@ pub fn process_swap_exact_in(accounts: &[AccountInfo], args: SwapExactInIxArgs) 
     let total_dst_lst_out = dst_lst_out
         .checked_add(to_protocol_fees_lst_amount)
         .ok_or(SControllerError::MathError)?;
-    if total_dst_lst_out > token_account_balance(accounts.dst_pool_reserves)? {
+    if total_dst_lst_out
+        > ReadonlyTokenAccount(accounts.dst_pool_reserves)
+            .try_into_valid()?
+            .try_into_initialized()?
+            .token_account_amount()
+    {
         return Err(SControllerError::NotEnoughLiquidity.into());
     }
 
@@ -94,7 +99,6 @@ pub fn process_swap_exact_in(accounts: &[AccountInfo], args: SwapExactInIxArgs) 
         TransferCheckedAccounts {
             from: accounts.src_lst_acc,
             to: accounts.src_pool_reserves,
-            token_program: accounts.src_lst_token_program,
             authority: accounts.signer,
             mint: accounts.src_lst_mint,
         },
@@ -104,7 +108,6 @@ pub fn process_swap_exact_in(accounts: &[AccountInfo], args: SwapExactInIxArgs) 
         TransferCheckedAccounts {
             from: accounts.dst_pool_reserves,
             to: accounts.protocol_fee_accumulator,
-            token_program: accounts.dst_lst_token_program,
             authority: accounts.pool_state,
             mint: accounts.dst_lst_mint,
         },
@@ -115,7 +118,6 @@ pub fn process_swap_exact_in(accounts: &[AccountInfo], args: SwapExactInIxArgs) 
         TransferCheckedAccounts {
             from: accounts.dst_pool_reserves,
             to: accounts.dst_lst_acc,
-            token_program: accounts.dst_lst_token_program,
             authority: accounts.pool_state,
             mint: accounts.dst_lst_mint,
         },

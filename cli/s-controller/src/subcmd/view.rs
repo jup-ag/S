@@ -5,7 +5,7 @@ use s_controller_lib::{
     create_protocol_fee_accumulator_address_with_protocol_fee_id, find_lst_state_list_address,
     find_pool_state_address, find_protocol_fee_address, try_lst_state_list, try_pool_state, U8Bool,
 };
-use sanctum_token_lib::{mint_supply, token_account_balance};
+use sanctum_token_lib::{ReadonlyMintAccount, ReadonlyTokenAccount};
 use solana_sdk::native_token::lamports_to_sol;
 
 use crate::common::find_sanctum_lst_by_mint;
@@ -46,7 +46,14 @@ impl ViewArgs {
         println!("Viewing info for program id: {program_id}");
         println!(
             "  LP token supply: {}",
-            lamports_to_sol(mint_supply(lp_mint_acc).unwrap())
+            lamports_to_sol(
+                ReadonlyMintAccount(lp_mint_acc)
+                    .try_into_valid()
+                    .unwrap()
+                    .try_into_initialized()
+                    .unwrap()
+                    .mint_supply()
+            )
         );
         println!("  Pool State address: {pool_state_addr}");
         if raw {
@@ -133,11 +140,25 @@ impl ViewArgs {
                 let reserves_acc = token_accs.pop().unwrap().unwrap();
                 println!(
                     "      reserves {reserves_addr}: {}",
-                    lamports_to_sol(token_account_balance(reserves_acc).unwrap())
+                    lamports_to_sol(
+                        ReadonlyTokenAccount(&reserves_acc)
+                            .try_into_valid()
+                            .unwrap()
+                            .try_into_initialized()
+                            .unwrap()
+                            .token_account_amount()
+                    )
                 );
                 println!(
                     "      protocol fees {protocol_fee_accum_addr}: {}",
-                    lamports_to_sol(token_account_balance(protocol_fee_accum_acc).unwrap())
+                    lamports_to_sol(
+                        ReadonlyTokenAccount(&protocol_fee_accum_acc)
+                            .try_into_valid()
+                            .unwrap()
+                            .try_into_initialized()
+                            .unwrap()
+                            .token_account_amount()
+                    )
                 );
                 println!();
             }

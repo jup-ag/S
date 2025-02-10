@@ -1,9 +1,13 @@
 use generic_pool_calculator_interface::GenericPoolCalculatorError;
 use generic_pool_calculator_lib::account_resolvers::LstSolCommonIntermediateKeys;
+use pricing_programs_interface::AccountMap;
 use sanctum_token_ratio::U64ValueRange;
 use sol_value_calculator_lib::SolValueCalculator;
 use solana_program::{instruction::AccountMeta, pubkey::Pubkey};
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountOwner, ReadonlyAccountPubkey};
+use solana_readonly_account::{
+    pubkey::{ReadonlyAccountOwner, ReadonlyAccountPubkey},
+    ReadonlyAccountData,
+};
 use spl_calculator_lib::{
     deserialize_sanctum_spl_stake_pool_checked, resolve_to_account_metas_for_calc,
     sanctum_spl_sol_val_calc_program, SanctumSplSolValCalc, SplStakePoolCalc,
@@ -31,7 +35,7 @@ impl SanctumSplLstSolValCalc {
         pool_acc: P,
         shared_current_epoch: Arc<AtomicU64>,
     ) -> Result<Self, GenericPoolCalculatorError> {
-        let stake_pool_addr = *pool_acc.pubkey();
+        let stake_pool_addr = pool_acc.pubkey();
         let pool = deserialize_sanctum_spl_stake_pool_checked(pool_acc)?;
         Ok(Self(SplLstSolValCalc {
             lst_mint: pool.pool_mint,
@@ -49,10 +53,7 @@ impl MutableLstSolValCalc for SanctumSplLstSolValCalc {
     }
 
     #[inline]
-    fn update<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    fn update(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         self.0.update(account_map)
     }
 }

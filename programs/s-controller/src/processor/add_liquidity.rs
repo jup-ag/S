@@ -13,8 +13,7 @@ use sanctum_misc_utils::{
     load_accounts, log_and_return_acc_privilege_err, log_and_return_wrong_acc_err,
 };
 use sanctum_token_lib::{
-    mint_supply, mint_to_invoke_signed, transfer_checked_decimal_agnostic_invoke, MintToAccounts,
-    TransferCheckedAccounts,
+    mint_to_multisig_invoke, transfer_checked_decimal_agnostic_invoke, TransferCheckedAccounts,
 };
 use solana_program::{
     account_info::AccountInfo, entrypoint::ProgramResult, program_error::ProgramError,
@@ -31,101 +30,99 @@ use crate::{
 use super::{sync_sol_value_unchecked, SyncSolValueUncheckedAccounts};
 
 pub fn process_add_liquidity(accounts: &[AccountInfo], args: AddLiquidityIxArgs) -> ProgramResult {
-    let (
-        accounts,
-        AddLiquidityIxFullArgs {
-            lst_index,
-            amts:
-                AddLiquidityIxAmts {
-                    lst_amount,
-                    min_lp_out,
-                },
-        },
-        lst_cpi,
-        pricing_cpi,
-    ) = verify_add_liquidity(accounts, args)?;
+    // let (
+    //     accounts,
+    //     AddLiquidityIxFullArgs {
+    //         lst_index,
+    //         amts:
+    //             AddLiquidityIxAmts {
+    //                 lst_amount,
+    //                 min_lp_out,
+    //             },
+    //     },
+    //     lst_cpi,
+    //     pricing_cpi,
+    // ) = verify_add_liquidity(accounts, args)?;
 
-    let sync_sol_value_accounts = SyncSolValueUncheckedAccounts::from(accounts);
+    // let sync_sol_value_accounts = SyncSolValueUncheckedAccounts::from(accounts);
 
-    sync_sol_value_unchecked(sync_sol_value_accounts, lst_cpi, lst_index)?;
+    // sync_sol_value_unchecked(sync_sol_value_accounts, lst_cpi, lst_index)?;
 
-    let start_total_sol_value = accounts.pool_state.total_sol_value()?;
+    // let start_total_sol_value = accounts.pool_state.total_sol_value()?;
 
-    let lst_amount_sol_value = lst_cpi.invoke_lst_to_sol(lst_amount)?.get_min();
-    let lst_amount_sol_value_after_fees =
-        pricing_cpi.invoke_price_lp_tokens_to_mint(PricingProgramIxArgs {
-            amount: lst_amount,
-            sol_value: lst_amount_sol_value,
-        })?;
-    // Will dilute existing LPs if unchecked
-    if lst_amount_sol_value_after_fees > lst_amount_sol_value {
-        return Err(SControllerError::PoolWouldLoseSolValue.into());
-    }
+    // let lst_amount_sol_value = lst_cpi.invoke_lst_to_sol(lst_amount)?.get_min();
+    // let lst_amount_sol_value_after_fees =
+    //     pricing_cpi.invoke_price_lp_tokens_to_mint(PricingProgramIxArgs {
+    //         amount: lst_amount,
+    //         sol_value: lst_amount_sol_value,
+    //     })?;
+    // // Will dilute existing LPs if unchecked
+    // if lst_amount_sol_value_after_fees > lst_amount_sol_value {
+    //     return Err(SControllerError::PoolWouldLoseSolValue.into());
+    // }
 
-    let CalcAddLiquidityProtocolFeesResult {
-        to_reserves_lst_amount,
-        to_protocol_fees_lst_amount,
-    } = calc_add_liquidity_protocol_fees(CalcAddLiquidityArgs {
-        lst_amount,
-        lst_amount_sol_value,
-        lst_amount_sol_value_after_fees,
-        lp_protocol_fee_bps: accounts.pool_state.lp_protocol_fee_bps()?,
-    })?;
+    // let CalcAddLiquidityProtocolFeesResult {
+    //     to_reserves_lst_amount,
+    //     to_protocol_fees_lst_amount,
+    // } = calc_add_liquidity_protocol_fees(CalcAddLiquidityArgs {
+    //     lst_amount,
+    //     lst_amount_sol_value,
+    //     lst_amount_sol_value_after_fees,
+    //     lp_protocol_fee_bps: accounts.pool_state.lp_protocol_fee_bps()?,
+    // })?;
 
-    let pool_total_sol_value = accounts.pool_state.total_sol_value()?;
-    let lp_token_supply = mint_supply(accounts.lp_token_mint)?;
-    let lp_tokens_to_mint = calc_lp_tokens_to_mint(
-        LpTokenRateArgs {
-            lp_token_supply,
-            pool_total_sol_value,
-        },
-        lst_amount_sol_value_after_fees,
-    )?;
+    // let pool_total_sol_value = accounts.pool_state.total_sol_value()?;
+    // let lp_token_supply = accounts.lp_token_mint)?;
+    // let lp_tokens_to_mint = calc_lp_tokens_to_mint(
+    //     LpTokenRateArgs {
+    //         lp_token_supply,
+    //         pool_total_sol_value,
+    //     },
+    //     lst_amount_sol_value_after_fees,
+    // )?;
 
-    if to_reserves_lst_amount == 0 || lp_tokens_to_mint == 0 {
-        return Err(SControllerError::ZeroValue.into());
-    }
+    // if to_reserves_lst_amount == 0 || lp_tokens_to_mint == 0 {
+    //     return Err(SControllerError::ZeroValue.into());
+    // }
 
-    if lp_tokens_to_mint < min_lp_out {
-        return Err(SControllerError::SlippageToleranceExceeded.into());
-    }
+    // if lp_tokens_to_mint < min_lp_out {
+    //     return Err(SControllerError::SlippageToleranceExceeded.into());
+    // }
 
-    transfer_checked_decimal_agnostic_invoke(
-        TransferCheckedAccounts {
-            from: accounts.src_lst_acc,
-            to: accounts.pool_reserves,
-            token_program: accounts.lst_token_program,
-            authority: accounts.signer,
-            mint: accounts.lst_mint,
-        },
-        to_reserves_lst_amount,
-    )?;
-    transfer_checked_decimal_agnostic_invoke(
-        TransferCheckedAccounts {
-            from: accounts.src_lst_acc,
-            to: accounts.protocol_fee_accumulator,
-            token_program: accounts.lst_token_program,
-            authority: accounts.signer,
-            mint: accounts.lst_mint,
-        },
-        to_protocol_fees_lst_amount,
-    )?;
-    mint_to_invoke_signed(
-        MintToAccounts {
-            mint: accounts.lp_token_mint,
-            mint_to: accounts.dst_lp_acc,
-            mint_authority: accounts.pool_state,
-            token_program: accounts.lp_token_program,
-        },
-        lp_tokens_to_mint,
-        &[&[POOL_STATE_SEED, &[POOL_STATE_BUMP]]],
-    )?;
-    sync_sol_value_unchecked(sync_sol_value_accounts, lst_cpi, lst_index)?;
+    // transfer_checked_decimal_agnostic_invoke(
+    //     TransferCheckedAccounts {
+    //         from: accounts.src_lst_acc,
+    //         to: accounts.pool_reserves,
+    //         authority: accounts.signer,
+    //         mint: accounts.lst_mint,
+    //     },
+    //     to_reserves_lst_amount,
+    // )?;
+    // transfer_checked_decimal_agnostic_invoke(
+    //     TransferCheckedAccounts {
+    //         from: accounts.src_lst_acc,
+    //         to: accounts.protocol_fee_accumulator,
+    //         authority: accounts.signer,
+    //         mint: accounts.lst_mint,
+    //     },
+    //     to_protocol_fees_lst_amount,
+    // )?;
+    // mint_to_multisig_invoke(
+    //     MintToAccounts {
+    //         mint: accounts.lp_token_mint,
+    //         mint_to: accounts.dst_lp_acc,
+    //         mint_authority: accounts.pool_state,
+    //         token_program: accounts.lp_token_program,
+    //     },
+    //     lp_tokens_to_mint,
+    //     &[&[POOL_STATE_SEED, &[POOL_STATE_BUMP]]],
+    // )?;
+    // sync_sol_value_unchecked(sync_sol_value_accounts, lst_cpi, lst_index)?;
 
-    let end_total_sol_value = accounts.pool_state.total_sol_value()?;
-    if end_total_sol_value < start_total_sol_value {
-        return Err(SControllerError::PoolWouldLoseSolValue.into());
-    }
+    // let end_total_sol_value = accounts.pool_state.total_sol_value()?;
+    // if end_total_sol_value < start_total_sol_value {
+    //     return Err(SControllerError::PoolWouldLoseSolValue.into());
+    // }
 
     Ok(())
 }

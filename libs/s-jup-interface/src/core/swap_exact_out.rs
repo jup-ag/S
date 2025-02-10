@@ -1,4 +1,4 @@
-use anyhow::anyhow;
+use anyhow::{anyhow, ensure};
 use jupiter_amm_interface::{Quote, QuoteParams, SwapAndAccountMetas, SwapParams};
 use pricing_programs_interface::{PriceExactOutIxArgs, PriceExactOutKeys};
 use s_controller_interface::{swap_exact_out_ix, SControllerError, SwapExactOutIxArgs};
@@ -20,7 +20,7 @@ use crate::{LstData, SPool};
 
 use super::{apply_sync_sol_value, calc_quote_fees};
 
-impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     pub(crate) fn quote_swap_exact_out(
         &self,
         QuoteParams {
@@ -88,13 +88,12 @@ impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
             &output_lst_data.sol_val_calc,
         )?;
         Ok(Quote {
-            min_in_amount: None,
-            min_out_amount: None,
             in_amount: src_lst_in,
             out_amount: *amount,
             fee_mint: *output_mint,
             fee_amount,
             fee_pct,
+            ..Default::default()
         })
     }
 

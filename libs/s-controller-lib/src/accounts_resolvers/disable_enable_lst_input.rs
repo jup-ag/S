@@ -2,7 +2,7 @@ use s_controller_interface::{
     DisableLstInputKeys, EnableLstInputKeys, LstState, PoolState, SControllerError,
 };
 use solana_program::pubkey::Pubkey;
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountPubkey};
+use solana_readonly_account::{pubkey::ReadonlyAccountPubkey, ReadonlyAccountData};
 
 use crate::{
     find_lst_state_list_address, find_pool_state_address,
@@ -35,10 +35,10 @@ impl<
             pool_state: pool_state_account,
             lst_state_list: lst_state_list_account,
         } = self;
-        if *pool_state_account.pubkey() != POOL_STATE_ID {
+        if pool_state_account.pubkey() != POOL_STATE_ID {
             return Err(SControllerError::IncorrectPoolState);
         }
-        if *lst_state_list_account.pubkey() != LST_STATE_LIST_ID {
+        if lst_state_list_account.pubkey() != LST_STATE_LIST_ID {
             return Err(SControllerError::IncorrectLstStateList);
         }
 

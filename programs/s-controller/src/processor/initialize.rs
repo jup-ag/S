@@ -12,7 +12,8 @@ use sanctum_misc_utils::{
 use sanctum_system_program_lib::{
     init_rent_exempt_account_invoke_signed, InitRentExemptAccountArgs,
 };
-use sanctum_token_lib::{set_authority_invoke, SetAuthorityAccounts, SetAuthorityArgs};
+use sanctum_token_lib::set_authority_multisig_invoke;
+// use sanctum_token_lib::{set_authority_invoke, SetAuthorityAccounts, SetAuthorityArgs};
 use solana_program::{
     account_info::AccountInfo, entrypoint::ProgramResult, program_error::ProgramError,
     program_pack::Pack,
@@ -59,26 +60,27 @@ pub fn process_initialize(accounts: &[AccountInfo]) -> ProgramResult {
         };
     }
 
-    let set_authority_accounts = SetAuthorityAccounts {
-        token_program: accounts.lp_token_program,
-        to_change: accounts.lp_token_mint,
-        current_authority: accounts.authority,
-    };
+    // let set_authority_accounts = SetAuthorityAccounts {
+    //     token_program: accounts.lp_token_program,
+    //     to_change: accounts.lp_token_mint,
+    //     current_authority: accounts.authority,
+    // };
 
-    set_authority_invoke(
-        set_authority_accounts,
-        SetAuthorityArgs {
-            authority_type: AuthorityType::MintTokens,
-            new_authority: Some(*accounts.pool_state.key),
-        },
-    )?;
-    set_authority_invoke(
-        set_authority_accounts,
-        SetAuthorityArgs {
-            authority_type: AuthorityType::FreezeAccount,
-            new_authority: Some(*accounts.pool_state.key),
-        },
-    )
+    // set_authority_multisig_invoke(
+    //     set_authority_accounts,
+    //     SetAuthorityIxArgs {
+    //         authority_type: AuthorityType::MintTokens,
+    //         new_authority: Some(*accounts.pool_state.key),
+    //     },
+    // )?;
+    // set_authority_multisig_invoke(
+    //     set_authority_accounts,
+    //     SetAuthorityAccounts {
+    //         authority_type: AuthorityType::FreezeAccount,
+    //         new_authority: Some(*accounts.pool_state.key),
+    //     },
+    // )
+    todo!("")
 }
 
 fn verify_initialize<'a, 'info>(

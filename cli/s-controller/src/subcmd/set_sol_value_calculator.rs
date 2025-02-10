@@ -11,7 +11,7 @@ use s_controller_lib::{
     SetSolValueCalculatorByMintFreeArgs,
 };
 use sanctum_solana_cli_utils::PubkeySrc;
-use solana_readonly_account::sdk::KeyedAccount;
+use solana_readonly_account::keyed::Keyed;
 use solana_sdk::{instruction::AccountMeta, pubkey::Pubkey};
 
 use crate::{common::verify_admin, lst_arg::LstArg};
@@ -103,7 +103,7 @@ impl SetSolValueCalculatorArgs {
             &SetSolValueCalculatorByMintFreeArgs {
                 pool_state: pool_state_acc,
                 lst_state_list: lst_state_list_acc,
-                lst_mint: KeyedAccount {
+                lst_mint: Keyed {
                     pubkey: mint.mint(),
                     account: lst_mint_acc,
                 },

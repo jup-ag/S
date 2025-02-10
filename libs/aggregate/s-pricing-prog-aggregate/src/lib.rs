@@ -1,5 +1,5 @@
 use pricing_programs_interface::{
-    PriceExactInIxArgs, PriceExactInKeys, PriceExactOutIxArgs, PriceExactOutKeys,
+    AccountMap, PriceExactInIxArgs, PriceExactInKeys, PriceExactOutIxArgs, PriceExactOutKeys,
     PriceLpTokensToMintIxArgs, PriceLpTokensToRedeemIxArgs,
 };
 use solana_program::{instruction::AccountMeta, pubkey::Pubkey};
@@ -53,10 +53,7 @@ impl MutablePricingProg for KnownPricingProg {
         }
     }
 
-    fn update<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    fn update(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         match self {
             Self::FlatFee(p) => p.update(account_map),
         }

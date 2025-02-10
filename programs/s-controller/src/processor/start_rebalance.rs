@@ -14,7 +14,7 @@ use sanctum_misc_utils::{
 };
 use sanctum_system_program_lib::{space_to_u64, transfer_direct_increment};
 use sanctum_token_lib::{
-    token_account_balance, transfer_checked_decimal_agnostic_invoke_signed, TransferCheckedAccounts,
+    transfer_checked_decimal_agnostic_invoke_signed, ReadonlyTokenAccount, TransferCheckedAccounts,
 };
 use solana_program::{
     account_info::AccountInfo,
@@ -69,7 +69,6 @@ pub fn process_start_rebalance(
 
     transfer_checked_decimal_agnostic_invoke_signed(
         TransferCheckedAccounts {
-            token_program: accounts.src_lst_token_program,
             from: accounts.src_pool_reserves,
             to: accounts.withdraw_to,
             authority: accounts.pool_state,
@@ -156,10 +155,20 @@ fn verify_start_rebalance<'a, 'info>(
     start_rebalance_verify_account_keys(actual, expected).map_err(log_and_return_wrong_acc_err)?;
     start_rebalance_verify_account_privileges(actual).map_err(log_and_return_acc_privilege_err)?;
 
-    if token_account_balance(actual.src_pool_reserves)? < *min_starting_src_lst {
+    if ReadonlyTokenAccount(actual.src_pool_reserves)
+        .try_into_valid()?
+        .try_into_initialized()?
+        .token_account_amount()
+        < *min_starting_src_lst
+    {
         return Err(SControllerError::SlippageToleranceExceeded.into());
     }
-    if token_account_balance(actual.dst_pool_reserves)? > *max_starting_dst_lst {
+    if ReadonlyTokenAccount(actual.dst_pool_reserves)
+        .try_into_valid()?
+        .try_into_initialized()?
+        .token_account_amount()
+        > *max_starting_dst_lst
+    {
         return Err(SControllerError::SlippageToleranceExceeded.into());
     }
 

@@ -11,7 +11,7 @@ use sanctum_misc_utils::{
     load_accounts, log_and_return_acc_privilege_err, log_and_return_wrong_acc_err,
 };
 use sanctum_token_lib::{
-    close_token_account_invoke_signed, token_account_balance, CloseTokenAccountAccounts,
+    close_account_multisig_invoke_signed, CloseAccountFreeAccounts, ReadonlyTokenAccount,
 };
 use solana_program::{
     account_info::AccountInfo, entrypoint::ProgramResult, program_error::ProgramError,
@@ -24,28 +24,25 @@ use crate::{
 
 pub fn process_remove_lst(accounts: &[AccountInfo], args: RemoveLstIxArgs) -> ProgramResult {
     let (accounts, lst_index) = verify_remove_lst(accounts, args)?;
-    close_token_account_invoke_signed(
-        CloseTokenAccountAccounts {
-            account_to_close: accounts.protocol_fee_accumulator,
-            authority: accounts.protocol_fee_accumulator_auth,
-            token_program: accounts.lst_token_program,
-            refund_rent_to: accounts.refund_rent_to,
-        },
-        &[&[PROTOCOL_FEE_SEED, &[PROTOCOL_FEE_BUMP]]],
-    )?;
+    // close_account_multisig_invoke_signed(
+    //     CloseAccountFreeAccounts {
+    //         token_account: accounts.protocol_fee_accumulator,
+    //         to: accounts.refund_rent_to,
+    //     },
+    //         &[&[PROTOCOL_FEE_SEED, &[PROTOCOL_FEE_BUMP]]],
+    // )?;
 
-    close_token_account_invoke_signed(
-        CloseTokenAccountAccounts {
-            account_to_close: accounts.pool_reserves,
-            authority: accounts.pool_state,
-            token_program: accounts.lst_token_program,
-            refund_rent_to: accounts.refund_rent_to,
-        },
-        &[&[POOL_STATE_SEED, &[POOL_STATE_BUMP]]],
-    )?;
-    // Gotta put direct account lamport manipuation last after token program CPIs
-    // because CPIs' lamport balance checks are broken:
-    // https://github.com/solana-labs/solana/issues/9711
+    // close_account_multisig_invoke_signed(
+    //     CloseAccountFreeAccounts {
+    //         token_account: accounts.pool_reserves,
+    //         to: accounts.refund_rent_to,
+    //     },
+    //     },
+    //     &[&[POOL_STATE_SEED, &[POOL_STATE_BUMP]]],
+    // )?;
+    // // Gotta put direct account lamport manipuation last after token program CPIs
+    // // because CPIs' lamport balance checks are broken:
+    // // https://github.com/solana-labs/solana/issues/9711
     remove_from_list_pda::<LstState>(
         RemoveFromListPdaAccounts {
             list_pda: accounts.lst_state_list,
@@ -84,8 +81,16 @@ fn verify_remove_lst<'a, 'info>(
     let lst_state = lst_state_list[lst_index]; // index checked during accounts resolution
 
     if lst_state.sol_value != 0
-        || token_account_balance(actual.pool_reserves)? != 0
-        || token_account_balance(actual.protocol_fee_accumulator)? != 0
+        || ReadonlyTokenAccount(actual.pool_reserves)
+            .try_into_valid()?
+            .try_into_initialized()?
+            .token_account_amount()
+            != 0
+        || ReadonlyTokenAccount(actual.protocol_fee_accumulator)
+            .try_into_valid()?
+            .try_into_initialized()?
+            .token_account_amount()
+            != 0
     {
         return Err(SControllerError::LstStillHasValue.into());
     }

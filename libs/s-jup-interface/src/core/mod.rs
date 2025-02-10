@@ -17,7 +17,7 @@ mod swap_exact_out;
 
 use common::*;
 
-impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     // Allows for use with transactions without jup program
     pub fn swap_ix(
         &self,

@@ -10,7 +10,7 @@ use sanctum_misc_utils::{
     load_accounts, log_and_return_acc_privilege_err, log_and_return_wrong_acc_err,
 };
 use sanctum_token_lib::{
-    token_account_balance, transfer_checked_decimal_agnostic_invoke_signed, TransferCheckedAccounts,
+    transfer_checked_decimal_agnostic_invoke_signed, ReadonlyTokenAccount, TransferCheckedAccounts,
 };
 use solana_program::{
     account_info::AccountInfo, entrypoint::ProgramResult, program_error::ProgramError,
@@ -24,17 +24,21 @@ pub fn process_withdraw_protocol_fees(
 ) -> ProgramResult {
     let accounts = verify_withdraw_protocol_fees(accounts)?;
 
-    if args.amount > token_account_balance(accounts.protocol_fee_accumulator)? {
+    if args.amount
+        > ReadonlyTokenAccount(&accounts.protocol_fee_accumulator)
+            .try_into_valid()?
+            .try_into_initialized()?
+            .token_account_amount()
+    {
         return Err(SControllerError::NotEnoughFees.into());
     }
 
     transfer_checked_decimal_agnostic_invoke_signed(
         TransferCheckedAccounts {
-            from: accounts.protocol_fee_accumulator,
-            to: accounts.withdraw_to,
-            token_program: accounts.token_program,
-            authority: accounts.protocol_fee_accumulator_auth,
-            mint: accounts.lst_mint,
+            from: &accounts.protocol_fee_accumulator,
+            to: &accounts.withdraw_to,
+            authority: &accounts.protocol_fee_accumulator_auth,
+            mint: &accounts.lst_mint,
         },
         args.amount,
         &[&[PROTOCOL_FEE_SEED, &[PROTOCOL_FEE_BUMP]]],

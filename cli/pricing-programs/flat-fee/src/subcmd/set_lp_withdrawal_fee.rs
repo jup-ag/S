@@ -6,7 +6,7 @@ use flat_fee_lib::{
 };
 use s_cli_utils::{handle_tx_full, pubkey_src_to_box_dyn_signer};
 use sanctum_solana_cli_utils::PubkeySrc;
-use solana_readonly_account::sdk::KeyedAccount;
+use solana_readonly_account::keyed::Keyed;
 
 use super::{common::verify_manager, Subcmd};
 
@@ -51,7 +51,7 @@ impl SetLpWithdrawalFeeArgs {
         let ix = set_lp_withdrawal_fee_ix_with_program_id(
             program_id,
             SetLpWithdrawalFeeFreeArgs {
-                state_acc: KeyedAccount {
+                state_acc: Keyed {
                     pubkey: state_pda,
                     account: state_acc,
                 },

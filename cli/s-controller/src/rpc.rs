@@ -6,7 +6,7 @@ use solana_client::{
     rpc_config::{RpcSimulateTransactionAccountsConfig, RpcSimulateTransactionConfig},
     rpc_response::RpcSimulateTransactionResult,
 };
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountPubkey};
+use solana_readonly_account::{pubkey::ReadonlyAccountPubkey, ReadonlyAccountData};
 use solana_sdk::{account::Account, pubkey::Pubkey, transaction::VersionedTransaction};
 
 pub async fn fetch_pool_state(rpc: &RpcClient, program_id: Pubkey) -> Account {
@@ -48,6 +48,7 @@ pub async fn does_tx_modify_pool_state<P: ReadonlyAccountData + ReadonlyAccountP
                     addresses: vec![pool_state_before.pubkey().to_string()],
                 }),
                 min_context_slot: None,
+                ..Default::default()
             },
         )
         .await
@@ -75,5 +76,5 @@ pub async fn does_tx_modify_pool_state<P: ReadonlyAccountData + ReadonlyAccountP
         _ => panic!("Unexpected ui account data {data:?}"),
     };
     let d = pool_state_before.data();
-    *pool_state_data_after.as_slice() != **d
+    *pool_state_data_after.as_slice() != *d
 }

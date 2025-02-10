@@ -13,7 +13,7 @@ use s_controller_lib::{
 };
 use sanctum_associated_token_lib::FindAtaAddressArgs;
 use sanctum_solana_cli_utils::PubkeySrc;
-use sanctum_token_lib::{token_account_balance, MintWithTokenProgram};
+use sanctum_token_lib::{MintWithTokenProgram, ReadonlyTokenAccount};
 use solana_sdk::{native_token::sol_to_lamports, pubkey::Pubkey};
 use spl_associated_token_account::instruction::create_associated_token_account;
 
@@ -172,7 +172,14 @@ impl WithdrawProtocolFeesArgs {
             vec![]
         };
         let amount = amount.map_or_else(
-            || token_account_balance(protocol_fee_accumulator_acc).unwrap(),
+            || {
+                ReadonlyTokenAccount(&protocol_fee_accumulator_acc)
+                    .try_into_valid()
+                    .unwrap()
+                    .try_into_initialized()
+                    .unwrap()
+                    .token_account_amount()
+            },
             sol_to_lamports, // assume all LSTs are 9 d.p.
         );
         ixs.push(

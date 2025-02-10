@@ -1,3 +1,4 @@
+use crate::lst_arg::LstArg;
 use clap::{
     builder::{StringValueParser, TypedValueParser},
     Args,
@@ -9,9 +10,7 @@ use flat_fee_lib::{
 };
 use s_cli_utils::{handle_tx_full, pubkey_src_to_box_dyn_signer};
 use sanctum_solana_cli_utils::PubkeySrc;
-use solana_readonly_account::sdk::KeyedAccount;
-
-use crate::lst_arg::LstArg;
+use solana_readonly_account::keyed::Keyed;
 
 use super::{common::verify_manager, Subcmd};
 
@@ -68,7 +67,7 @@ impl SetLstFeeArgs {
             program_id,
             SetLstFeeByMintFreeArgs {
                 lst_mint: lst_mint.mint(),
-                state_acc: KeyedAccount {
+                state_acc: Keyed {
                     pubkey: state_pda,
                     account: state_acc,
                 },

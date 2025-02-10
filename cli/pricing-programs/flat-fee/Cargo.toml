@@ -20,7 +20,7 @@ sanctum-lst-list = { workspace = true }
 sanctum-solana-cli-utils = { workspace = true }
 sanctum-solana-client-utils = { workspace = true }
 solana-client = { workspace = true }
-solana-readonly-account = { workspace = true, features = ["solana-sdk"] }
+solana-readonly-account = { workspace = true, features = ["solana-sdk", "keyed"] }
 solana-remote-wallet = { workspace = true, features = ["hidapi", "linux-static-hidraw"] } # for ledger support, these should be default-features but they're disabled somewhere
 solana-sdk = { workspace = true }
 solana-transaction-status = { workspace = true }

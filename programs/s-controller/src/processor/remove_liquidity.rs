@@ -13,8 +13,8 @@ use sanctum_misc_utils::{
     load_accounts, log_and_return_acc_privilege_err, log_and_return_wrong_acc_err,
 };
 use sanctum_token_lib::{
-    burn_invoke, mint_supply, transfer_checked_decimal_agnostic_invoke_signed, BurnAccounts,
-    TransferCheckedAccounts,
+    burn_checked_decimal_agnostic_invoke_signed, transfer_checked_decimal_agnostic_invoke_signed,
+    BurnCheckedAccounts, ReadonlyMintAccount, ReadonlyTokenAccount, TransferCheckedAccounts,
 };
 use solana_program::{
     account_info::AccountInfo, entrypoint::ProgramResult, program_error::ProgramError,
@@ -49,7 +49,10 @@ pub fn process_remove_liquidity(
     sync_sol_value_unchecked(sync_sol_value_accounts, lst_cpi, lst_index)?;
 
     let pool_total_sol_value = accounts.pool_state.total_sol_value()?;
-    let lp_token_supply = mint_supply(accounts.lp_token_mint)?;
+    let lp_token_supply = ReadonlyMintAccount(accounts.lp_token_mint)
+        .try_into_valid()?
+        .try_into_initialized()?
+        .mint_supply();
     let lp_tokens_sol_value = calc_lp_tokens_sol_value(
         LpTokenRateArgs {
             lp_token_supply,
@@ -85,20 +88,19 @@ pub fn process_remove_liquidity(
         return Err(SControllerError::SlippageToleranceExceeded.into());
     }
 
-    burn_invoke(
-        BurnAccounts {
-            mint: accounts.lp_token_mint,
-            burn_from: accounts.src_lp_acc,
-            burn_from_authority: accounts.signer,
-            token_program: accounts.lp_token_program,
-        },
-        lp_token_amount,
-    )?;
+    // burn_invoke(
+    //     BurnCheckedAccounts {
+    //         mint: accounts.lp_token_mint,
+    //         burn_from: accounts.src_lp_acc,
+    //         burn_from_authority: accounts.signer,
+    //         token_program: accounts.lp_token_program,
+    //     },
+    //     lp_token_amount,
+    // )?;
 
     transfer_checked_decimal_agnostic_invoke_signed(
         TransferCheckedAccounts {
             to: accounts.dst_lst_acc,
-            token_program: accounts.lst_token_program,
             from: accounts.pool_reserves,
             authority: accounts.pool_state,
             mint: accounts.lst_mint,
@@ -110,7 +112,6 @@ pub fn process_remove_liquidity(
     transfer_checked_decimal_agnostic_invoke_signed(
         TransferCheckedAccounts {
             to: accounts.protocol_fee_accumulator,
-            token_program: accounts.lst_token_program,
             from: accounts.pool_reserves,
             authority: accounts.pool_state,
             mint: accounts.lst_mint,

@@ -2,13 +2,13 @@ use borsh::BorshDeserialize;
 use lido_calculator_interface::Lido;
 use lido_calculator_lib::{LidoCalc, LidoSolValCalc, LIDO_LST_SOL_COMMON_INTERMEDIATE_KEYS};
 use lido_keys::{lido_state, stsol};
+use pricing_programs_interface::AccountMap;
 use sanctum_token_ratio::U64ValueRange;
 use sol_value_calculator_lib::SolValueCalculator;
 use solana_program::{instruction::AccountMeta, pubkey::Pubkey};
 use solana_readonly_account::ReadonlyAccountData;
 use spl_calculator_lib::resolve_to_account_metas_for_calc;
 use std::{
-    collections::HashMap,
     error::Error,
     fmt::Display,
     sync::{
@@ -45,10 +45,7 @@ impl MutableLstSolValCalc for LidoLstSolValCalc {
         vec![lido_state::ID]
     }
 
-    fn update<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    fn update(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         if let Some(acc) = account_map.get(&lido_state::ID) {
             self.calc = Some(LidoCalc::from(Lido::deserialize(&mut acc.data().as_ref())?));
         }

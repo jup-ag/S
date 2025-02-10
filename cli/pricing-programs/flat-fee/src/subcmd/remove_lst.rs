@@ -8,7 +8,7 @@ use flat_fee_lib::{
 };
 use s_cli_utils::{handle_tx_full, pubkey_src_to_box_dyn_signer};
 use sanctum_solana_cli_utils::PubkeySrc;
-use solana_readonly_account::sdk::KeyedAccount;
+use solana_readonly_account::keyed::Keyed;
 
 use crate::lst_arg::LstArg;
 
@@ -66,7 +66,7 @@ impl RemoveLstArgs {
             RemoveLstFreeArgs {
                 refund_rent_to: refund_rent_to.pubkey(),
                 lst_mint: lst_mint.mint(),
-                state_acc: KeyedAccount {
+                state_acc: Keyed {
                     pubkey: state_pda,
                     account: state_acc,
                 },

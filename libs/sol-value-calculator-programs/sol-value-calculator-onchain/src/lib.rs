@@ -25,6 +25,7 @@ pub fn process_sol_to_lst_unchecked<S: SolValueCalculator>(
 
 fn set_u64_value_range_return_data(range: U64ValueRange) -> Result<(), ProgramError> {
     let mut buf = [0u8; U64_VALUE_RANGE_SER_SIZE];
+
     range.serialize(&mut buf.as_mut())?;
     set_return_data(&buf);
     Ok(())

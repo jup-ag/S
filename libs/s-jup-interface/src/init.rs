@@ -6,6 +6,7 @@ use s_controller_lib::{
 use sanctum_lst_list::SanctumLst;
 use solana_program::pubkey::Pubkey;
 use solana_readonly_account::ReadonlyAccountData;
+use solana_sdk::account::Account;
 
 use crate::{
     utils::{try_lst_data, try_pricing_prog},
@@ -44,7 +45,7 @@ pub struct SPoolInitAccounts<S, L> {
     pub pool_state: S,
 }
 
-impl<S, L> SPool<S, L> {
+impl SPool {
     /// Gets the list of accounts that must be fetched first to initialize
     /// SPool by passing the result into [`Self::from_fetched_accounts`]
     pub fn init_keys(program_id: Pubkey) -> SPoolInitKeys {
@@ -55,13 +56,13 @@ impl<S, L> SPool<S, L> {
     }
 }
 
-impl<S, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     /// `Self`s created from this fn must be update_full() 2 more times before they can be used
     /// - first update fetches pool_state, updates various sol value calculator programs and pricing program
     /// - second update fetches LP token mint read from fetched pool_state
     pub fn from_lst_state_list_account(
         program_id: Pubkey,
-        lst_state_list_account: L,
+        lst_state_list_account: Account,
         lst_list: &[SanctumLst],
         shared_current_epoch: &Arc<AtomicU64>,
     ) -> anyhow::Result<Self> {
@@ -92,7 +93,7 @@ impl<S, L: ReadonlyAccountData> SPool<S, L> {
     }
 }
 
-impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     /// `Self`s created from this fn must be update_full() 1 more time before they can be used.
     ///  - this update updates the various sol value calculator programs and pricing program
     pub fn from_init_accounts(
@@ -100,7 +101,7 @@ impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
         SPoolInitAccounts {
             lst_state_list: lst_state_list_acc,
             pool_state: pool_state_acc,
-        }: SPoolInitAccounts<S, L>,
+        }: SPoolInitAccounts<Account, Account>,
         lst_list: &[SanctumLst],
         shared_current_epoch: &Arc<AtomicU64>,
     ) -> anyhow::Result<Self> {

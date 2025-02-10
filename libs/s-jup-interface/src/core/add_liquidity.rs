@@ -15,6 +15,7 @@ use sanctum_token_lib::MintWithTokenProgram;
 use sanctum_token_ratio::AmtsAfterFeeBuilder;
 use solana_readonly_account::ReadonlyAccountData;
 use solana_sdk::{
+    account::Account,
     instruction::{AccountMeta, Instruction},
     pubkey::Pubkey,
 };
@@ -23,7 +24,7 @@ use crate::{LstData, SPool};
 
 use super::{apply_sync_sol_value, calc_quote_fees};
 
-impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     pub(crate) fn quote_add_liquidity(
         &self,
         QuoteParams {
@@ -72,13 +73,12 @@ impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
             &input_lst_data.sol_val_calc,
         )?;
         Ok(Quote {
-            min_in_amount: None,
-            min_out_amount: None,
             in_amount: *amount,
             out_amount: lp_tokens_to_mint,
             fee_mint: *input_mint,
             fee_amount,
             fee_pct,
+            ..Default::default()
         })
     }
 
@@ -92,7 +92,7 @@ impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
             token_transfer_authority,
             ..
         }: &SwapParams,
-    ) -> anyhow::Result<AddLiquidityByMintFreeArgs<&S, &L, MintWithTokenProgram>> {
+    ) -> anyhow::Result<AddLiquidityByMintFreeArgs<&Account, &Account, MintWithTokenProgram>> {
         Ok(AddLiquidityByMintFreeArgs {
             signer: *token_transfer_authority,
             src_lst_acc: *source_token_account,

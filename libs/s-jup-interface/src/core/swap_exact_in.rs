@@ -1,4 +1,4 @@
-use anyhow::anyhow;
+use anyhow::{anyhow, ensure};
 use jupiter_amm_interface::{Quote, QuoteParams, SwapAndAccountMetas, SwapParams};
 use pricing_programs_interface::{PriceExactInIxArgs, PriceExactInKeys};
 use s_controller_interface::{swap_exact_in_ix, SControllerError, SwapExactInIxArgs};
@@ -16,6 +16,7 @@ use sanctum_token_lib::MintWithTokenProgram;
 use sanctum_token_ratio::AmtsAfterFeeBuilder;
 use solana_readonly_account::ReadonlyAccountData;
 use solana_sdk::{
+    account::Account,
     instruction::{AccountMeta, Instruction},
     pubkey::Pubkey,
 };
@@ -24,7 +25,7 @@ use crate::{LstData, SPool};
 
 use super::{apply_sync_sol_value, calc_quote_fees};
 
-impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     pub(crate) fn quote_swap_exact_in(
         &self,
         QuoteParams {
@@ -92,13 +93,12 @@ impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
             &output_lst_data.sol_val_calc,
         )?;
         Ok(Quote {
-            min_in_amount: None,
-            min_out_amount: None,
             in_amount: *amount,
             out_amount: dst_lst_out,
             fee_mint: *output_mint,
             fee_amount,
             fee_pct,
+            ..Default::default()
         })
     }
 
@@ -114,7 +114,8 @@ impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
             token_transfer_authority,
             ..
         }: &SwapParams,
-    ) -> anyhow::Result<SwapByMintsFreeArgs<MintWithTokenProgram, MintWithTokenProgram, &L>> {
+    ) -> anyhow::Result<SwapByMintsFreeArgs<MintWithTokenProgram, MintWithTokenProgram, &Account>>
+    {
         Ok(SwapByMintsFreeArgs {
             signer: *token_transfer_authority,
             src_lst_acc: *source_token_account,

@@ -22,7 +22,7 @@ sanctum-token-ratio = { workspace = true }
 serde_json = { workspace = true }
 solana-program = { workspace = true }
 solana-sdk = { workspace = true }
-solana-readonly-account = { workspace = true, features = ["solana-sdk"] }
+solana-readonly-account = { workspace = true, features = ["solana-sdk","solana-pubkey"] }
 spl-calculator-lib = { workspace = true }
 wsol-calculator-lib = { workspace = true }
 

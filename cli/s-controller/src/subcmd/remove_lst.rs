@@ -8,7 +8,7 @@ use s_controller_lib::{
     find_lst_state_list_address, find_pool_state_address, RemoveLstByMintFreeArgs,
 };
 use sanctum_solana_cli_utils::PubkeySrc;
-use solana_readonly_account::sdk::KeyedAccount;
+use solana_readonly_account::keyed::Keyed;
 use solana_sdk::pubkey::Pubkey;
 use std::str::FromStr;
 
@@ -82,7 +82,7 @@ impl RemoveLstArgs {
             refund_rent_to,
             pool_state: pool_state_acc,
             lst_state_list: lst_state_list_acc,
-            lst_mint: KeyedAccount {
+            lst_mint: Keyed {
                 pubkey: mint,
                 account: mint_acc,
             },
