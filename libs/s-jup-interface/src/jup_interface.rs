@@ -55,7 +55,12 @@ impl Amm for SPoolJup {
             ));
         }
         let SanctumLstList { sanctum_lst_list } = SanctumLstList::load();
-        Self::from_lst_state_list_account(program_id, account.clone(), &sanctum_lst_list, epoch)
+        Self::from_lst_state_list_account_and_sanctum_lst_list(
+            program_id,
+            account.clone(),
+            &sanctum_lst_list,
+            epoch,
+        )
     }
 
     fn label(&self) -> String {
