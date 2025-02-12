@@ -18,6 +18,11 @@ mod update;
 pub use init::*;
 pub use jup_interface::*;
 
+pub use s_controller_lib::{
+    find_lst_state_list_address,
+    program::{ID as INF_PROGRAM_ID, LST_STATE_LIST_ID as INF_LST_LIST_ID},
+};
+
 #[derive(Debug, Clone)]
 pub struct LstData {
     pub sol_val_calc: KnownLstSolValCalc,

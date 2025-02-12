@@ -123,53 +123,43 @@ impl Amm for SPoolJup {
     }
 
     fn program_dependencies(&self) -> Vec<(Pubkey, String)> {
-        // stake pool programs are commented out for now
-        // since we dont execute them and we haven't done
-        // account subslicing for program data account data yet
-        vec![
-            // SPL
-            (spl_stake_pool_program::ID, "spl_stake_pool".to_owned()),
-            (spl_calculator_lib::program::ID, "spl_calculator".to_owned()),
-            // Sanctum SPL
-            (
-                sanctum_spl_stake_pool_program::ID,
-                "sanctum_spl_stake_pool".to_owned(),
-            ),
-            (
-                spl_calculator_lib::sanctum_spl_sol_val_calc_program::ID,
-                "sanctum_spl_calculator".to_owned(),
-            ),
-            // Sanctum SPL Multi
-            (
-                sanctum_spl_multi_stake_pool_program::ID,
-                "sanctum_spl_multi_stake_pool".to_owned(),
-            ),
-            (
-                spl_calculator_lib::sanctum_spl_multi_sol_val_calc_program::ID,
-                "sanctum_spl_multi_calculator".to_owned(),
-            ),
-            // marinade
-            (marinade_program::ID, "marinade".to_owned()),
-            (
-                marinade_calculator_lib::program::ID,
-                "marinade_calculator".to_owned(),
-            ),
-            // lido
-            (lido_program::ID, "lido".to_owned()),
-            (
-                lido_calculator_lib::program::ID,
-                "lido_calculator".to_owned(),
-            ),
-            // wSOL
-            (
-                wsol_calculator_lib::program::ID,
-                "wsol_calculator".to_owned(),
-            ),
-            // pricing program
-            (
-                flat_fee_interface::ID,
-                "flat_fee_pricing_program".to_owned(),
-            ),
-        ]
+        PROGRAM_DEPENDENCIES
+            .into_iter()
+            .map(|(address, label)| (address, label.into()))
+            .collect()
     }
 }
+
+// stake pool programs are commented out for now
+// since we dont execute them and we haven't done
+// account subslicing for program data account data yet
+pub const PROGRAM_DEPENDENCIES: [(Pubkey, &str); 12] = [
+    // SPL
+    (spl_stake_pool_program::ID, "spl_stake_pool"),
+    (spl_calculator_lib::program::ID, "spl_calculator"),
+    // Sanctum SPL
+    (sanctum_spl_stake_pool_program::ID, "sanctum_spl_stake_pool"),
+    (
+        spl_calculator_lib::sanctum_spl_sol_val_calc_program::ID,
+        "sanctum_spl_calculator",
+    ),
+    // Sanctum SPL Multi
+    (
+        sanctum_spl_multi_stake_pool_program::ID,
+        "sanctum_spl_multi_stake_pool",
+    ),
+    (
+        spl_calculator_lib::sanctum_spl_multi_sol_val_calc_program::ID,
+        "sanctum_spl_multi_calculator",
+    ),
+    // marinade
+    (marinade_program::ID, "marinade"),
+    (marinade_calculator_lib::program::ID, "marinade_calculator"),
+    // lido
+    (lido_program::ID, "lido"),
+    (lido_calculator_lib::program::ID, "lido_calculator"),
+    // wSOL
+    (wsol_calculator_lib::program::ID, "wsol_calculator"),
+    // pricing program
+    (flat_fee_interface::ID, "flat_fee_pricing_program"),
+];
