@@ -15,6 +15,7 @@ use flat_fee_lib::{
     pda::{FeeAccountCreatePdaArgs, FeeAccountFindPdaArgs, ProgramStateFindPdaArgs},
     utils::{try_fee_account, try_program_state},
 };
+use pricing_programs_interface::AccountMap;
 use solana_program::{instruction::AccountMeta, pubkey::Pubkey};
 use solana_readonly_account::ReadonlyAccountData;
 use std::collections::HashMap;
@@ -24,15 +25,11 @@ use crate::{KnownPricingProg, MutablePricingProg, PricingProg, PricingProgErr};
 #[derive(Clone, Debug, Default)]
 pub struct FlatFeePricingProg {
     program_id: Pubkey,
-    program_state: Option<ProgramState>,
+    program_state: Option<ProgramState>, // value = None means ProgramState not yet fetched
     mints_to_fee_accounts: HashMap<Pubkey, Option<FeeAccount>>, // value = None means FeeAccount not yet fetched
 }
 
 impl FlatFeePricingProg {
-    pub fn program_id(&self) -> Pubkey {
-        self.program_id
-    }
-
     pub fn find_program_state_addr(&self) -> Pubkey {
         ProgramStateFindPdaArgs {
             program_id: self.program_id,
@@ -41,11 +38,17 @@ impl FlatFeePricingProg {
         .0
     }
 
-    fn get_fee_account_checked(&self, lst_mint: &Pubkey) -> Result<&FeeAccount, FlatFeeError> {
+    #[inline]
+    pub fn get_fee_account_checked(&self, lst_mint: &Pubkey) -> Result<&FeeAccount, FlatFeeError> {
         match self.mints_to_fee_accounts.get(lst_mint) {
             Some(Some(a)) => Ok(a),
             _ => Err(FlatFeeError::UnsupportedLstMint), // TODO: better error for when FeeAccount not yet fetched?
         }
+    }
+
+    #[inline]
+    pub const fn program_state(&self) -> Option<&ProgramState> {
+        self.program_state.as_ref()
     }
 
     /// Returns (input_bump, output_bump)
@@ -136,10 +139,7 @@ impl MutablePricingProg for FlatFeePricingProg {
             .collect()
     }
 
-    fn update<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    fn update(&mut self, account_map: &AccountMap) -> anyhow::Result<()> {
         let psa = self.find_program_state_addr();
         if let Some(acc) = account_map.get(&psa) {
             self.program_state = Some(*try_program_state(&acc.data())?);
@@ -168,6 +168,10 @@ impl MutablePricingProg for FlatFeePricingProg {
 }
 
 impl PricingProg for FlatFeePricingProg {
+    fn pricing_program_id(&self) -> Pubkey {
+        self.program_id
+    }
+
     fn quote_lp_tokens_to_redeem(
         &self,
         _output_lst_mint: Pubkey,

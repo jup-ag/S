@@ -1,6 +1,9 @@
 use s_controller_interface::{AddLstKeys, SControllerError};
 use solana_program::{pubkey::Pubkey, system_program};
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountOwner, ReadonlyAccountPubkey};
+use solana_readonly_account::{
+    pubkey::{ReadonlyAccountOwner, ReadonlyAccountPubkey},
+    ReadonlyAccountData,
+};
 
 use crate::{
     find_lst_state_list_address, find_pool_reserves_address_with_pool_state_id,
@@ -36,7 +39,7 @@ impl<
     > AddLstFreeArgs<S, M>
 {
     pub fn resolve(self) -> Result<(AddLstKeys, LstStateBumps), SControllerError> {
-        if *self.pool_state.pubkey() != POOL_STATE_ID {
+        if self.pool_state.pubkey() != POOL_STATE_ID {
             return Err(SControllerError::IncorrectPoolState);
         }
         self.resolve_inner(ResolveInner {
@@ -78,8 +81,8 @@ impl<S: ReadonlyAccountData, M: ReadonlyAccountOwner + ReadonlyAccountPubkey> Ad
         let pool_state_data = try_pool_state(&pool_state_data)?;
 
         let find_pda_keys = FindLstPdaAtaKeys {
-            lst_mint: *lst_mint.pubkey(),
-            token_program: *lst_mint.owner(),
+            lst_mint: lst_mint.pubkey(),
+            token_program: lst_mint.owner(),
         };
         let (pool_reserves, pool_reserves_bump) =
             find_pool_reserves_address_with_pool_state_id(pool_state, find_pda_keys);
@@ -93,7 +96,7 @@ impl<S: ReadonlyAccountData, M: ReadonlyAccountOwner + ReadonlyAccountPubkey> Ad
             AddLstKeys {
                 payer,
                 sol_value_calculator,
-                lst_mint: *lst_mint.pubkey(),
+                lst_mint: lst_mint.pubkey(),
                 admin: pool_state_data.admin,
                 pool_reserves,
                 protocol_fee_accumulator,
@@ -102,7 +105,7 @@ impl<S: ReadonlyAccountData, M: ReadonlyAccountOwner + ReadonlyAccountPubkey> Ad
                 lst_state_list,
                 associated_token_program: spl_associated_token_account::ID,
                 system_program: system_program::ID,
-                lst_token_program: *lst_mint.owner(),
+                lst_token_program: lst_mint.owner(),
             },
             LstStateBumps {
                 protocol_fee_accumulator: protocol_fee_accumulator_bump,

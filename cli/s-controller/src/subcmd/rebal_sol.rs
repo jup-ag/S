@@ -1,11 +1,14 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    sync::{atomic::AtomicU64, Arc},
+};
 
 use clap::{
     builder::{StringValueParser, TypedValueParser},
     Args,
 };
 use inquire::Confirm;
-use jupiter_amm_interface::SwapParams;
+use jupiter_amm_interface::{AccountMap, SwapParams};
 use s_cli_utils::handle_tx_full;
 use s_controller_lib::{
     end_rebalance_ix_from_start_rebalance_ix, find_lst_state_list_address,
@@ -19,7 +22,9 @@ use s_sol_val_calc_prog_aggregate::LstSolValCalc;
 use sanctum_solana_cli_utils::parse_signer;
 use sanctum_token_lib::{token_account_balance, MintWithTokenProgram};
 use solana_readonly_account::keyed::Keyed;
-use solana_sdk::{account::Account, native_token::lamports_to_sol, pubkey::Pubkey};
+use solana_sdk::{
+    account::Account, clock::Clock, native_token::lamports_to_sol, pubkey::Pubkey, sysvar,
+};
 use spl_associated_token_account::{
     get_associated_token_address_with_program_id,
     instruction::create_associated_token_account_idempotent,
@@ -115,9 +120,11 @@ impl RebalSolArgs {
         };
 
         let mut fetched = rpc
-            .get_multiple_accounts(&[pool_id, lst_state_list_id])
+            .get_multiple_accounts(&[pool_id, lst_state_list_id, sysvar::clock::ID])
             .await
             .unwrap();
+        let clock = fetched.pop().unwrap().unwrap();
+        let clock: Clock = bincode::deserialize(&clock.data).unwrap();
         let lst_state_list_acc = fetched.pop().unwrap().unwrap();
         let pool_acc = fetched.pop().unwrap().unwrap();
 
@@ -128,6 +135,7 @@ impl RebalSolArgs {
                 pool_state: pool_acc,
             },
             &SANCTUM_LST_LIST.sanctum_lst_list,
+            &Arc::new(AtomicU64::new(clock.epoch)),
         )
         .unwrap();
         let mut deposit_sol = DepositSolStakedex::from_sanctum_lst(sanctum_lst);
@@ -139,7 +147,7 @@ impl RebalSolArgs {
         accounts_to_fetch.dedup();
 
         // TODO: make sure accounts_to_fetch.len() < 5 or we get kicked by rpc
-        let account_map: HashMap<Pubkey, Account> = rpc
+        let account_map: AccountMap = rpc
             .get_multiple_accounts(&accounts_to_fetch)
             .await
             .unwrap()
@@ -284,6 +292,7 @@ impl RebalSolArgs {
                     open_order_address: None,
                     quote_mint_to_referrer: None,
                     jupiter_program_id: &Pubkey::default(),
+                    missing_dynamic_accounts_as_default: false,
                 })
                 .unwrap(),
         );

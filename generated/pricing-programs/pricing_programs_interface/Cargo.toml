@@ -16,3 +16,6 @@ workspace = true
 
 [dependencies.solana-program]
 workspace = true
+
+[dependencies.jupiter-amm-interface]
+workspace = true

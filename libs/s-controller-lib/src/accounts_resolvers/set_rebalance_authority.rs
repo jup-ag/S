@@ -1,6 +1,6 @@
 use s_controller_interface::{SControllerError, SetRebalanceAuthorityKeys};
 use solana_program::pubkey::Pubkey;
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountPubkey};
+use solana_readonly_account::{pubkey::ReadonlyAccountPubkey, ReadonlyAccountData};
 
 use crate::{find_pool_state_address, program::POOL_STATE_ID, try_pool_state};
 
@@ -49,7 +49,7 @@ impl<D: ReadonlyAccountData + ReadonlyAccountPubkey>
             signer: self.pool_admin()?,
             new_rebalance_authority: self.new_rebalance_authority,
         }
-        .resolve_with_pool_state_id(*self.pool_state.pubkey()))
+        .resolve_with_pool_state_id(self.pool_state.pubkey()))
     }
 
     pub fn resolve_current_rebalance_authority_with_pool_state_id(
@@ -59,7 +59,7 @@ impl<D: ReadonlyAccountData + ReadonlyAccountPubkey>
             signer: self.current_rebalance_authority()?,
             new_rebalance_authority: self.new_rebalance_authority,
         }
-        .resolve_with_pool_state_id(*self.pool_state.pubkey()))
+        .resolve_with_pool_state_id(self.pool_state.pubkey()))
     }
 }
 

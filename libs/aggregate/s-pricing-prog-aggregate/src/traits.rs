@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use pricing_programs_interface::{
-    PriceExactInIxArgs, PriceExactInKeys, PriceExactOutIxArgs, PriceExactOutKeys,
+    AccountMap, PriceExactInIxArgs, PriceExactInKeys, PriceExactOutIxArgs, PriceExactOutKeys,
     PriceLpTokensToMintIxArgs, PriceLpTokensToRedeemIxArgs,
 };
 use solana_program::{instruction::AccountMeta, pubkey::Pubkey};
@@ -68,13 +68,12 @@ pub trait MutablePricingProg {
     /// Currently, all update() implementations
     /// - no-ops if account to update is not in account_map
     /// - errors if account exists but deserialization failed / other failure
-    fn update<D: ReadonlyAccountData>(
-        &mut self,
-        account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()>;
+    fn update(&mut self, account_map: &AccountMap) -> anyhow::Result<()>;
 }
 
 pub trait PricingProg {
+    fn pricing_program_id(&self) -> Pubkey;
+
     /// Returns SOL value of the LST to redeem
     fn quote_lp_tokens_to_redeem(
         &self,

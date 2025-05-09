@@ -15,14 +15,9 @@ mod remove_liquidity;
 mod swap_exact_in;
 mod swap_exact_out;
 
-pub use add_liquidity::*;
-pub use remove_liquidity::*;
-pub use swap_exact_in::*;
-pub use swap_exact_out::*;
-
 use common::*;
 
-impl<S: ReadonlyAccountData, L: ReadonlyAccountData> SPool<S, L> {
+impl SPool {
     // Allows for use with transactions without jup program
     pub fn swap_ix(
         &self,

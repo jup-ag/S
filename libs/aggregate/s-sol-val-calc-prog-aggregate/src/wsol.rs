@@ -1,3 +1,4 @@
+use pricing_programs_interface::AccountMap;
 use sanctum_token_ratio::U64ValueRange;
 use sol_value_calculator_lib::SolValueCalculator;
 use solana_program::{instruction::AccountMeta, pubkey::Pubkey};
@@ -16,10 +17,7 @@ impl MutableLstSolValCalc for WsolLstSolValCalc {
         Vec::new()
     }
 
-    fn update<D: ReadonlyAccountData>(
-        &mut self,
-        _account_map: &HashMap<Pubkey, D>,
-    ) -> anyhow::Result<()> {
+    fn update(&mut self, _account_map: &AccountMap) -> anyhow::Result<()> {
         Ok(())
     }
 }

@@ -1,6 +1,9 @@
 use s_controller_interface::{SControllerError, SetSolValueCalculatorKeys};
 use solana_program::pubkey::Pubkey;
-use solana_readonly_account::{ReadonlyAccountData, ReadonlyAccountOwner, ReadonlyAccountPubkey};
+use solana_readonly_account::{
+    pubkey::{ReadonlyAccountOwner, ReadonlyAccountPubkey},
+    ReadonlyAccountData,
+};
 
 use crate::{
     create_pool_reserves_address, find_lst_state_list_address, find_pool_state_address,
@@ -33,10 +36,10 @@ impl<
             lst_state_list: lst_state_list_account,
             ..
         } = self;
-        if *pool_state_account.pubkey() != POOL_STATE_ID {
+        if pool_state_account.pubkey() != POOL_STATE_ID {
             return Err(SControllerError::IncorrectPoolState);
         }
-        if *lst_state_list_account.pubkey() != LST_STATE_LIST_ID {
+        if lst_state_list_account.pubkey() != LST_STATE_LIST_ID {
             return Err(SControllerError::IncorrectLstStateList);
         }
         self.resolve_inner(ResolveInner {
@@ -77,8 +80,8 @@ impl<
         } = self;
         let lst_state_list_data = lst_state_list_acc.data();
         let lst_state_list = try_lst_state_list(&lst_state_list_data)?;
-        let lst_state = try_match_lst_mint_on_list(*lst_mint.pubkey(), lst_state_list, *lst_index)?;
-        let pool_reserves = create_pool_reserves_address(lst_state, *lst_mint.owner())?;
+        let lst_state = try_match_lst_mint_on_list(lst_mint.pubkey(), lst_state_list, *lst_index)?;
+        let pool_reserves = create_pool_reserves_address(lst_state, lst_mint.owner())?;
 
         let pool_state_data = pool_state_acc.data();
         let pool_state = try_pool_state(&pool_state_data)?;
@@ -141,8 +144,8 @@ impl<
 
         let lst_state_list_data = lst_state_list_account.data();
         let lst_state_list = try_lst_state_list(&lst_state_list_data)?;
-        let (lst_index, lst_state) = try_find_lst_mint_on_list(*lst_mint.pubkey(), lst_state_list)?;
-        let pool_reserves = create_pool_reserves_address(lst_state, *lst_mint.owner())?;
+        let (lst_index, lst_state) = try_find_lst_mint_on_list(lst_mint.pubkey(), lst_state_list)?;
+        let pool_reserves = create_pool_reserves_address(lst_state, lst_mint.owner())?;
 
         let pool_state_data = pool_state_account.data();
         let pool_state = try_pool_state(&pool_state_data)?;
