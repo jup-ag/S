@@ -4725,7 +4725,7 @@ dependencies = [
 [[package]]
 name = "sanctum-associated-token-lib"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=75401ce6ff8b6bd364ffd5ef6d68e21a3210330d#75401ce6ff8b6bd364ffd5ef6d68e21a3210330d"
+source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=fea9f93ea41325acdde6c2a11ac2c65ee140db39#fea9f93ea41325acdde6c2a11ac2c65ee140db39"
 dependencies = [
  "solana-program",
  "solana-readonly-account",
@@ -4772,7 +4772,7 @@ dependencies = [
 [[package]]
 name = "sanctum-misc-utils"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=75401ce6ff8b6bd364ffd5ef6d68e21a3210330d#75401ce6ff8b6bd364ffd5ef6d68e21a3210330d"
+source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=fea9f93ea41325acdde6c2a11ac2c65ee140db39#fea9f93ea41325acdde6c2a11ac2c65ee140db39"
 dependencies = [
  "borsh 1.5.7",
  "solana-program",
@@ -4791,7 +4791,7 @@ dependencies = [
 [[package]]
 name = "sanctum-solana-cli-utils"
 version = "0.5.0"
-source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=75401ce6ff8b6bd364ffd5ef6d68e21a3210330d#75401ce6ff8b6bd364ffd5ef6d68e21a3210330d"
+source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=fea9f93ea41325acdde6c2a11ac2c65ee140db39#fea9f93ea41325acdde6c2a11ac2c65ee140db39"
 dependencies = [
  "async-trait",
  "bincode",
@@ -4809,7 +4809,7 @@ dependencies = [
 [[package]]
 name = "sanctum-solana-client-utils"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=75401ce6ff8b6bd364ffd5ef6d68e21a3210330d#75401ce6ff8b6bd364ffd5ef6d68e21a3210330d"
+source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=fea9f93ea41325acdde6c2a11ac2c65ee140db39#fea9f93ea41325acdde6c2a11ac2c65ee140db39"
 dependencies = [
  "log",
  "medians",
@@ -4821,7 +4821,7 @@ dependencies = [
 [[package]]
 name = "sanctum-solana-test-utils"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=75401ce6ff8b6bd364ffd5ef6d68e21a3210330d#75401ce6ff8b6bd364ffd5ef6d68e21a3210330d"
+source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=fea9f93ea41325acdde6c2a11ac2c65ee140db39#fea9f93ea41325acdde6c2a11ac2c65ee140db39"
 dependencies = [
  "assert_cmd",
  "async-trait",
@@ -4846,7 +4846,7 @@ dependencies = [
  "solana-rpc-client-api",
  "solana-sdk",
  "solana-version",
- "spl-token 7.0.0",
+ "spl-token 6.0.0",
  "tempfile",
  "tokio",
 ]
@@ -4914,7 +4914,7 @@ dependencies = [
 [[package]]
 name = "sanctum-system-program-lib"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=75401ce6ff8b6bd364ffd5ef6d68e21a3210330d#75401ce6ff8b6bd364ffd5ef6d68e21a3210330d"
+source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=fea9f93ea41325acdde6c2a11ac2c65ee140db39#fea9f93ea41325acdde6c2a11ac2c65ee140db39"
 dependencies = [
  "solana-program",
  "solana-readonly-account",
@@ -4924,7 +4924,7 @@ dependencies = [
 [[package]]
 name = "sanctum-token-lib"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=75401ce6ff8b6bd364ffd5ef6d68e21a3210330d#75401ce6ff8b6bd364ffd5ef6d68e21a3210330d"
+source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=fea9f93ea41325acdde6c2a11ac2c65ee140db39#fea9f93ea41325acdde6c2a11ac2c65ee140db39"
 dependencies = [
  "solana-program",
  "solana-readonly-account",
@@ -4934,7 +4934,7 @@ dependencies = [
 [[package]]
 name = "sanctum-token-ratio"
 version = "0.2.0"
-source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=75401ce6ff8b6bd364ffd5ef6d68e21a3210330d#75401ce6ff8b6bd364ffd5ef6d68e21a3210330d"
+source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=fea9f93ea41325acdde6c2a11ac2c65ee140db39#fea9f93ea41325acdde6c2a11ac2c65ee140db39"
 dependencies = [
  "borsh 1.5.7",
  "num-traits",
@@ -7027,7 +7027,7 @@ dependencies = [
 [[package]]
 name = "solana-readonly-account"
 version = "2.0.0"
-source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=75401ce6ff8b6bd364ffd5ef6d68e21a3210330d#75401ce6ff8b6bd364ffd5ef6d68e21a3210330d"
+source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=fea9f93ea41325acdde6c2a11ac2c65ee140db39#fea9f93ea41325acdde6c2a11ac2c65ee140db39"
 dependencies = [
  "solana-program",
  "solana-sdk",
@@ -9385,7 +9385,7 @@ dependencies = [
 [[package]]
 name = "spl_associated_token_account_interface"
 version = "2.0.0"
-source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=75401ce6ff8b6bd364ffd5ef6d68e21a3210330d#75401ce6ff8b6bd364ffd5ef6d68e21a3210330d"
+source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=fea9f93ea41325acdde6c2a11ac2c65ee140db39#fea9f93ea41325acdde6c2a11ac2c65ee140db39"
 dependencies = [
  "borsh 1.5.7",
  "num-derive",
@@ -9409,7 +9409,7 @@ dependencies = [
 [[package]]
 name = "spl_token_interface"
 version = "4.0.0"
-source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=75401ce6ff8b6bd364ffd5ef6d68e21a3210330d#75401ce6ff8b6bd364ffd5ef6d68e21a3210330d"
+source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=fea9f93ea41325acdde6c2a11ac2c65ee140db39#fea9f93ea41325acdde6c2a11ac2c65ee140db39"
 dependencies = [
  "borsh 1.5.7",
  "num-derive",
@@ -9630,7 +9630,7 @@ dependencies = [
 [[package]]
 name = "system_program_interface"
 version = "1.17.13"
-source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=75401ce6ff8b6bd364ffd5ef6d68e21a3210330d#75401ce6ff8b6bd364ffd5ef6d68e21a3210330d"
+source = "git+https://github.com/jup-ag/sanctum-solana-utils.git?rev=fea9f93ea41325acdde6c2a11ac2c65ee140db39#fea9f93ea41325acdde6c2a11ac2c65ee140db39"
 dependencies = [
  "serde",
  "solana-program",
