@@ -110,6 +110,10 @@ impl Amm for SPoolJup {
         Ok(swap_and_account_metas)
     }
 
+    fn get_accounts_len(&self) -> usize {
+        32
+    }
+
     fn clone_amm(&self) -> Box<dyn Amm + Send + Sync> {
         Box::new(self.clone())
     }
